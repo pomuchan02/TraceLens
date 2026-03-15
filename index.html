@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TranceLens</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+</head>
+<body class="container">
+    
+    <h1 class="mt-3">TranceLens</h1>
+    <h4>Javaエラーログ解析ツール</h4>
+
+    <!-- タブヘッダー -->
+    <div class="tab-heads mt-4 col-5 d-flex">    
+        <button class="tab-head active center-align" style="width: 15%;" data-tab="1"><span>メイン</span></button>
+        <button class="tab-head center-align" style="width: 15%;" data-tab="2"><span>使い方</span></button>
+        <button class="tab-head center-align" style="width: 20%;" data-tab="3"><span>サイト紹介</span></button>
+        <button class="tab-head center-align" style="width: 30%;" data-tab="4"><span>プライバシーポリシー</span></button>
+    </div>
+
+    <!-- タブボディー -->
+    <div class="tab-bodies">
+        <div data-tab="1" class="tab-body active">
+            <!-- メインタブ -->
+            <p class="form-text">エラーログを入力してください</p>
+            <div class="input-group inputErrorLog">
+                <span class="input-group-text">エラーログ</span>
+                <textarea class="errorLog form-control" style="height: 300px;" id="errorLog"></textarea>
+                <div class="CharCounter" id="charCounter">0 / 500</div>
+            </div>
+            <button type="button" class="mt-3 btn btn-primary" style="width: 8%;">解析</button>
+
+            <!-- 解析結果 -->
+            <div class="analyzer-result">
+                <h4 class="mt-5">＜ 解析結果 ＞</h4>
+
+                <p class="mt-3"><b>■例外名の特定</b></p>
+                <div class="input-group mb-4">
+                    <span class="input-group-text">例外</span>
+                    <div id="exceptionName" class="form-control" readonly></div>
+                </div>
+
+                <p class="mt-3"><b>■エラー内容</b></p>
+                <div class="input-group mb-4">
+                    <span class="input-group-text">エラー</span>
+                    <div id="causedBy" class="form-control" readonly></div>
+                </div>
+
+                <p class="mt-3"><b>■エラー発生クラスの特定</b></p>
+                <div class="input-group mb-2">
+                    <span class="input-group-text">クラス</span>
+                    <div id="errorClass" class="form-control" readonly></div>
+                </div>
+                <div class="packege-info d-flex">
+                    <p>パッケージ：</p>
+                    <p id="errorPackage"></p>
+                </div>
+                
+                <p class="mt-3"><b>■エラー発生行の特定</b></p>
+                <div class="input-group mb-4">
+                    <span class="input-group-text">行</span>
+                    <div id="errorLine" class="form-control" readonly></div>
+                </div>
+            </div>
+
+        </div>
+
+        <div data-tab="2" class="tab-body">
+            <!-- 使い方タブ -->
+            <h3 class="mt-3">使い方</h3>
+            <p class="form-text">１．出力されたログをテキストエリアに張り付け</p>
+            <p class="form-text">２．「解析」ボタンをクリック</p>
+            <p class="form-text">３．解析結果を確認</p>
+        </div>
+
+        <div data-tab="3" class="tab-body">
+            <!-- サイト紹介タブ -->
+            <h3 class="mt-3">サイト紹介</h3>
+            <p class="form-text">TranceLensは、Javaエラーログを簡単に解析できるツールです。</p>
+            <p class="form-text">エラーログを入力するだけで、例外名抽出とエラー発生行の特定を提案します。</p>
+            <p class="form-text">運用保守フェーズやJava初心者が、エラーの原因を迅速に特定し、問題解決に役立てることを目的としています。</p>
+            <p class="form-text mt-3">現在は無料版のみ提供しています。</p>
+            <p class="form-text">今後は、より高度な解析機能を備えた有料版の提供も検討しています。</p>
+        </div>
+
+        <div data-tab="4" class="tab-body">
+            <!-- プライバシーポリシータブ -->
+            <h3 class="mt-3">プライバシーポリシー</h3>
+            <p class="form-text">当サイトは、ユーザーの個人情報を収集しません。</p>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+<footer class="footer text-center mt-5">
+    <p class="form-text mt-3 mb-3">何か問題がありましたら、お気軽にご連絡ください。</p>
+    <div class="form-text">X（旧：Twitter）: <a href="https://twitter.com/pomu466439" target="_blank">@pomu466439</a></div>
+    <div class="form-text">メールアドレス: <a href="mailto:rena0703jb@gmail.com">rena0703jb@gmail.com</a></div>
+    <p class="form-text mt-3 mb-3">&copy; 2026 TranceLens</p>
+</footer>
+
+</html>

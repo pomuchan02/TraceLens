@@ -1,0 +1,65 @@
+/* ======= タブヘッダー用 ======= */
+.tab-head{
+    border-radius: 0.7em 0.7em 0 0;
+    border-color: rgb(137,195,235);
+    background-color: rgba(137, 196, 235, 0.436);
+    cursor: pointer;
+    transition: .5s;
+}
+
+.tab-head.active{
+    border-radius: 0.7em 0.7em 0 0;
+    background-color: rgb(137,195,235);
+    cursor: pointer;
+    transition: .5s;
+}
+
+/* ======= タブ本体用 ======= */
+.tab-body{
+    border-radius: 0 0 0.75em 0.75em;
+    border-top: 0.15em solid rgb(137,195,235);
+    background-color: rgba(255, 255, 255, 1);
+    transition: .2s;
+    display:none;
+}
+
+.tab-body.active{
+    display:flex;
+    flex-direction:column;
+}
+
+/* ======= 例外名表示用 ======= */
+/* .analyzer-result {
+    display:none;
+} */
+
+.analyzer-result.active {
+    display:flex;
+    flex-direction:column;
+}
+
+/** ======= フッター用 ======= */
+.footer {
+    border-radius: 0 0 0.75em 0.75em;
+    border-top: 0.15em solid rgb(137,195,235);
+    transition: .5s;
+}
+
+
+/** ======= 文字数カウンター用 ======= */
+.inputErrorLog {
+    position: relative;
+}
+.CharCounter {
+    color: gray;
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+}
+
+/* 縦横中央揃え */
+.center-align {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
