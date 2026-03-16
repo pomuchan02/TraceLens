@@ -12,6 +12,7 @@
     background-color: rgba(137, 196, 235, 0.436);
     cursor: pointer;
     transition: .5s;
+    max-width: 200px;
 }
 
 .tab-head.active{
@@ -52,7 +53,6 @@
     transition: .5s;
 }
 
-
 /** ======= 文字数カウンター用 ======= */
 .inputErrorLog {
     position: relative;
@@ -62,6 +62,11 @@
     position: absolute;
     bottom: 10px;
     right: 10px;
+}
+
+/** ======= 解析ボタン ======= */
+.btn {
+    max-width: 200px;
 }
 
 /* 縦横中央揃え */
