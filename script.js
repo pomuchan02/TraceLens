@@ -15,6 +15,8 @@ button.addEventListener('click', () => {
     // ログ内容確認
     const targetLog = getTargetLog(log);
 
+    document.querySelector('.analyzer-result').classList.add('active');
+
     // 例外名の抽出
     const exceptionName = extractException(targetLog);
     document.getElementById('exceptionName').textContent = exceptionName || '見つかりませんでした';
@@ -54,7 +56,7 @@ tabs.addEventListener('click', (e) => {
  * 文字数カウンターの更新
  */
 const textarea = document.getElementById('errorLog');
-const maxLength = 500;
+const maxLength = 2000;
 const charCounter = document.getElementById("charCounter");
 textarea.addEventListener("input", () => {
     // 現在の文字数を取得する

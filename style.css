@@ -1,3 +1,10 @@
+/* ======= タイトル ======= */
+.title-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
 /* ======= タブヘッダー用 ======= */
 .tab-head{
     border-radius: 0.7em 0.7em 0 0;
@@ -29,9 +36,9 @@
 }
 
 /* ======= 例外名表示用 ======= */
-/* .analyzer-result {
+.analyzer-result {
     display:none;
-} */
+}
 
 .analyzer-result.active {
     display:flex;
