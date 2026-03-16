@@ -6,13 +6,22 @@
 }
 
 /* ======= タブヘッダー用 ======= */
+.tab-heads {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    max-width: 800px;
+}
+
 .tab-head{
+    display: flex;
     border-radius: 0.7em 0.7em 0 0;
     border-color: rgb(137,195,235);
     background-color: rgba(137, 196, 235, 0.436);
     cursor: pointer;
     transition: .5s;
-    max-width: 200px;
+    width: 30%;
+    max-width: 800px;
 }
 
 .tab-head.active{
@@ -66,7 +75,8 @@
 
 /** ======= 解析ボタン ======= */
 .btn {
-    max-width: 200px;
+    width: 50%;
+    max-width: 100px;
 }
 
 /* 縦横中央揃え */
