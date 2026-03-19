@@ -20,6 +20,8 @@ button.addEventListener('click', () => {
             return;
         }
 
+        document.querySelector('.generate-result').classList.add('active');
+
         // ② クエリの妥当性を検証
         validateQuery(query);
         

@@ -46,11 +46,11 @@
 }
 
 /* ======= 例外名表示用 ======= */
-.analyzer-result {
+.generate-result {
     display:none;
 }
 
-.analyzer-result.active {
+.generate-result.active {
     display:flex;
     flex-direction:column;
 }
@@ -73,7 +73,7 @@
     right: 10px;
 }
 
-/** ======= 解析ボタン ======= */
+/** ======= ボタン ======= */
 .btn {
     width: 50%;
     max-width: 100px;
