@@ -1,4 +1,4 @@
-# SQL2ER - SQL DDL to ER Diagram Generator
+# SQL2ER - SQL to ER Diagram Generator
 
 **SQLからER図を自動生成するツール**
 
