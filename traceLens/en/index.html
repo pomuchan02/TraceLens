@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:title" content="TraceLens - Java Stack Trace Analyzer">
+    <meta property="og:image" content="../og.png">
+    <meta property="og:type" content="website">
+    <link rel="icon" type="image/png" href="../icon.png">
+    <link rel="icon" href="../favicon.ico">
+    <title>TraceLens</title>
+    <link rel="stylesheet" href="../style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <script>
+        window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+    </script>
+    <script defer src="/<unique-path>/script.js"></script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3492436194316171"
+     crossorigin="anonymous"></script>
+</head>
+<body class="container">
+    
+    <!-- タイトル -->
+    <div class="title-group mt-3">
+        <img src="../favicon.ico" alt="TraceLens Icon" height="8%" width="15%">
+        <img src="../title.png" alt="TraceLens Icon" height="8%" width="30%">
+    </div>
+    <h3 class="mt-3">Java Stack Trace Analyzer</h3>
+    
+    <!-- タブヘッダー -->
+    <div class="tab-heads mt-4 d-flex">    
+        <button class="tab-head active center-align" data-tab="1"><span>Main</span></button>
+        <button class="tab-head center-align" data-tab="2"><span>How to Use</span></button>
+        <button class="tab-head center-align" data-tab="3"><span>About</span></button>
+        <button class="tab-head center-align" data-tab="4"><span>Privacy Policy</span></button>
+    </div>
+
+    <!-- タブボディー -->
+    <div class="tab-bodies">
+        <div data-tab="1" class="tab-body active">
+            <!-- Main Tab -->
+            <p class="form-text mt-2">Paste your Java stack trace here</p>
+            <div class="input-group inputErrorLog">
+                <span class="input-group-text">Error Log</span>
+                <textarea class="errorLog form-control" style="height: 300px;" id="errorLog"></textarea>
+                <div class="CharCounter" id="charCounter">0 / 2000</div>
+            </div>
+            <button type="button" class="mt-3 btn btn-primary">Analyze</button>
+
+            <!-- Analysis Results -->
+            <div class="analyzer-result">
+                <h4 class="mt-5">＜ Analysis Results ＞</h4>
+
+                <p class="mt-3"><b>■Exception Name</b></p>
+                <div class="input-group mb-4">
+                    <span class="input-group-text">Exception</span>
+                    <div id="exceptionName" class="form-control" readonly></div>
+                </div>
+
+                <p class="mt-3"><b>■Error Message</b></p>
+                <div class="input-group mb-4">
+                    <span class="input-group-text">Error</span>
+                    <div id="causedBy" class="form-control" readonly></div>
+                </div>
+
+                <p class="mt-3"><b>■Error Class</b></p>
+                <div class="input-group mb-2">
+                    <span class="input-group-text">Class</span>
+                    <div id="errorClass" class="form-control" readonly></div>
+                </div>
+                <div class="packege-info d-flex">
+                    <p>Package：</p>
+                    <p id="errorPackage"></p>
+                </div>
+                
+                <p class="mt-3"><b>■Error Line</b></p>
+                <div class="input-group mb-4">
+                    <span class="input-group-text">Line</span>
+                    <div id="errorLine" class="form-control" readonly></div>
+                </div>
+            </div>
+
+        </div>
+
+        <div data-tab="2" class="tab-body">
+            <!-- How to Use Tab -->
+            <h3 class="mt-3">How to Use</h3>
+            <p class="form-text">1. Paste the output log into the text area</p>
+            <p class="form-text">2. Click the "Analyze" button</p>
+            <p class="form-text">3. Check the analysis results</p>
+        </div>
+
+        <div data-tab="3" class="tab-body">
+            <!-- About Tab -->
+            <h3 class="mt-3">About</h3>
+            <p class="form-text">TraceLens is a tool that allows you to easily analyze Java error logs.</p>
+            <p class="form-text">By simply inputting the error log, it extracts the exception name and identifies the error line.</p>
+            <p class="form-text">It is designed to help both maintenance phases and Java beginners quickly identify the cause of errors and assist in problem-solving.</p>
+            <p class="form-text">※This is released as a personal project.</p>
+            <p class="form-text mt-3">Currently, only the free version is available.</p>
+            <p class="form-text">In the future, we plan to offer a paid version with more advanced analysis features.</p>
+            <p class="form-text mt-3">Japanese version coming soon...</p>
+        </div>
+
+        <div data-tab="4" class="tab-body">
+            <!-- Privacy Policy Tab -->
+            <h3 class="mt-3">Privacy Policy</h3>
+            <p class="form-text">This site may use cookies for advertising purposes.</p>
+        </div>
+    </div>
+    <script src="../script.js"></script>
+</body>
+
+<footer class="footer text-center mt-5">
+    <p class="form-text mt-3 mb-3">If you encounter any issues, please feel free to contact us.</p>
+    <a href="https://twitter.com/pomu466439"><img src="../x.jpg" alt="X Icon" height="20px" width="20px"></a>
+    <p class="form-text mt-3 mb-3">&copy; 2026 TraceLens</p>
+</footer>
+
+</html>
