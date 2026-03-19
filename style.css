@@ -2,6 +2,13 @@
     background-color: rgba(27, 27, 27, 0.89);
 }
 
+.TranceLensIcon {
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    max-width: 1200px;
+}
+
 .Tool-Group {
     display: flex;
     justify-content: center;
