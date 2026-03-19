@@ -2,14 +2,6 @@
     background-color: rgba(27, 27, 27, 0.89);
 }
 
-/* .TranceLensIcon {
-        display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100px;
-    width: 120px;
-} */
-
 .Tool-Group {
     display: flex;
     justify-content: center;
@@ -17,19 +9,21 @@
     margin-top: 30px;
     border-width: 10px;
     border-radius: 900em 900em 900em 900em;
-    border: 5px solid rgb(5, 37, 128);
+    border: 3px solid rgb(5, 37, 128);
     background-color: #ff1cac;
     transition: 1s;
 }
 
 .Tool-Group-Icon {
-    width: 130px;
-    height: 100px;
+    margin-left: 20px;
+    width: 100px;
+    height: 70px;
 }
 
 .Tool-Group-Title {
-    width: 320px;
-    height: 80px;
+    margin-right: 20px;
+    width: 300px;
+    height: 60px;
 }
 
 .tx {
