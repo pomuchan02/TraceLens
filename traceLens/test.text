@@ -1,0 +1,10 @@
+org.springframework.web.util.NestedServletException: Request processing failed
+    at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:982)
+
+Caused by: java.lang.IllegalStateException: Service error
+    at com.example.service.UserService.run(UserService.java:55)
+
+Caused by: java.sql.SQLException: Connection refused
+    at com.mysql.jdbc.Statement.executeQuery(Statement.java:123)
+    at java.lang.Object.wait(Native Method)
+    at com.example.SomeClass.run(Unknown Source)

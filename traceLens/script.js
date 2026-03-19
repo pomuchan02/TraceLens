@@ -123,21 +123,41 @@ function extractErrorMessage(log) {
 }
 
 /**
- * エラー発生クラスを抽出する
+ * 除外対象のパッケージ
+ */
+const ignorePackages = [
+    "java.",
+    "javax.",
+    "jakarta.",
+    "sun.",
+    "org.springframework.",
+    "org.apache."
+];
+
+/**
+ * エラー発生クラスを抽出する（自作コードのみ）
  * @param log エラーログ
- * @return エラー発生クラスの配列 [パッケージ名, クラス名]
+ * @return エラー発生クラスの配列 [パッケージ名, クラス名] または null
  */
 function extractErrorLine(log) {
     const errorLineRegex =
-        /at\s+([\w.$]+)\((?:([\w.$]+):(\d+)|Native Method|Unknown Source)\)/;
-    const matchLine = log.match(errorLineRegex);
-    if (matchLine) {
-        console.log('Error lines found: 1:', matchLine[1], ', 2:', matchLine[2], ', 3:', matchLine[3]);
-        return [matchLine[1], matchLine[2], matchLine[3]];
-    } else {
-        console.log('No error lines found');
-        return [matchLine[1], matchLine[2], null];
+        /at\s+([\w.$]+)\((?:([\w.$]+):(\d+)|Native Method|Unknown Source)\)/g;
+    let matchLine;
+    
+    while ((matchLine = errorLineRegex.exec(log)) !== null) {
+        const fullClassName = matchLine[1];
+        
+        // 除外キーワードに一致するかチェック
+        const isIgnored = ignorePackages.some(pkg => fullClassName.startsWith(pkg));
+        
+        if (!isIgnored) {
+            console.log('Error lines found: 1:', matchLine[1], ', 2:', matchLine[2], ', 3:', matchLine[3]);
+            return [matchLine[1], matchLine[2], matchLine[3]];
+        }
     }
+    
+    console.log('No user code error lines found');
+    return null;
 }
 
 /**
