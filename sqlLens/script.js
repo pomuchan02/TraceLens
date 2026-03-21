@@ -74,7 +74,7 @@ tabs.addEventListener('click', (e) => {
 const textarea = document.getElementById('errorLog');
 const maxLength = 2000;
 const charCounter = document.getElementById("charCounter");
-textarea.addEventListener("input", () => {
+textarea.addEventListener("sqlInput", () => {
     // 現在の文字数を取得する
     const currentLength = textarea.value.length;
   
