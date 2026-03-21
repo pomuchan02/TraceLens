@@ -9,9 +9,14 @@
  * 4. 関係推測 → 5. ER図生成 → 6. UI表示 & エクスポート準備
  */
 
+/**
+ * ===============================
+ * createER図生成のエントリポイント
+ * ===============================
+ */
 const button = document.querySelector('.Create2ER-StartButton');
 button.addEventListener('click', () => {
-    console.log('=== 生成開始 ===');
+    console.log('=== CREATE生成開始 ===');
     try {
         // ① クエリ入力値を取得
         const query = document.querySelector('.create-query').value.trim();
@@ -36,33 +41,79 @@ button.addEventListener('click', () => {
         
         // ⑥ UIに表示 & Mermaidエクスポート準備
         displayDiagram(mermaidCode, 'createErDiagram');
-        prepareExcelExport(tables, relationships, mermaidCode);
+        prepareExcelExport(tables, relationships, mermaidCode, '.create-downloadButton', 'createErDiagram');
 
     } catch (error) {
         console.error(`エラー: ${error.message}`);
         alert(`エラー: ${error.message}`);
     } finally {
-        console.log('=== 生成終了 ===');
+        console.log('=== CREATE生成終了 ===');
     }
 });
 
 /**
  * ===============================
- * ① クエリ検証
+ * selectER図生成のエントリポイント
+ * ===============================
+ */
+const selectButton = document.querySelector('.Select2ER-StartButton');
+selectButton.addEventListener('click', () => {
+    console.log('=== SELECT生成開始 ===');
+    try {
+        // ① クエリ入力値を取得
+        const query = document.querySelector('.select-query').value.trim();
+        if (!query) {
+            alert('クエリを入力してください');
+            return;
+        }
+
+        document.querySelector('.select-generate-result').classList.add('active');
+
+        // ② クエリの妥当性を検証
+        validateQuery(query);
+        
+        // ③ SELECT文をパース
+        const selectInfo = parseSelectQuery(query);
+        
+        // ④ テーブル情報を抽出（型はすべてstring）
+        const tables = extractTablesFromSelect(selectInfo);
+        
+        // ⑤ JOIN ON条件からリレーションシップを推測
+        const tableNames = new Set(tables.map(t => t.name.toLowerCase()));
+        const relationships = inferRelationshipsFromJoin(selectInfo.joins, tableNames, selectInfo.aliasMap, selectInfo);
+        
+        // ⑥ Mermaidコードを生成
+        const mermaidCode = generateMermaidDiagram(tables, relationships);
+        
+        // ⑦ UIに表示 & Mermaidエクスポート準備
+        displayDiagram(mermaidCode, 'selectErDiagram');
+        prepareExcelExport(tables, relationships, mermaidCode, '.select-downloadButton', 'selectErDiagram');
+
+    } catch (error) {
+        console.error(`エラー: ${error.message}`);
+        alert(`エラー: ${error.message}`);
+    } finally {
+        console.log('=== SELECT生成終了 ===');
+    }
+});
+
+/**
+ * ===============================
+ * ① クエリ検証（CREATE/SELECT共通）
  * ===============================
  * 入力されたDDLが有効であることを確認
  * - 空でないことを確認
- * - CREATE TABLE文を含むことを確認
+ * - CREATE TABLE文またはSELECT文を含むことを確認
  * 
- * @param {string} query - ユーザーが入力したDDL
+ * @param {string} query - ユーザーが入力したDDLまたはSELECT
  * @throws {Error} 検証失敗時
  */
 function validateQuery(query) {
     if (!query || query.length === 0) {
         throw new Error('クエリが空です');
     }
-    if (!/CREATE\s+TABLE/i.test(query)) {
-        throw new Error('CREATE TABLE文が見つかりません');
+    if (!/CREATE\s+TABLE|SELECT/i.test(query)) {
+        throw new Error('CREATE TABLE文またはSELECT文が見つかりません');
     }
 }
 
@@ -425,6 +476,566 @@ function inferForeignKeyFromName(columnName, tableNameMap) {
 
 /**
  * ===============================
+ * SELECT文用: クエリパース
+ * ===============================
+ * SELECT文からFROM句とJOIN句を抽出
+ * 複数のJOIN（INNER/LEFT/RIGHT等）に対応
+ * 
+ * 対応パターン:
+ * - 基本: SELECT ... FROM table_name
+ * - JOIN: SELECT ... FROM t1 JOIN t2 ON t1.id = t2.id
+ * - 複数JOIN: FROM t1 JOIN t2 ON ... JOIN t3 ON ...
+ * - サブクエリ: FROM (SELECT ...) t1 JOIN t2 ON ...
+ * 
+ * 抽出内容:
+ * - FROM句のテーブル（メインテーブル）
+ * - すべてのJOIN句（テーブル名 + ON条件）
+ * 
+ * @param {string} query - SELECT文
+ * @returns {Object} {fromTable: 'table1', joins: [{table: 'table2', onCondition: 'table1.id = table2.user_id'}, ...]}
+ * @throws {Error} FROM句が見つからない場合
+ */
+function parseSelectQuery(query) {
+    // クエリから不要な前後の空白と末尾のセミコロンを削除
+    query = query.trim().replace(/;+$/, '');
+    
+    // エイリアスマッピング: alias => table
+    const aliasMap = {};
+    
+    // ① SELECT句を抽出（括弧を含む複数行SELECT対応）
+    // 括弧のバランスを考慮しながらFROMを探す
+    const selectMatch = query.match(/SELECT\b/i);
+    const selectColumns = [];
+    let fromIndex = -1;
+    
+    if (selectMatch) {
+        const selectStart = selectMatch.index + 6;  // "SELECT" の長さ
+        let parenCount = 0;
+        
+        // SELECT の後ろから括弧をカウントしながら FROM を探す
+        for (let i = selectStart; i < query.length; i++) {
+            if (query[i] === '(') {
+                parenCount++;
+            } else if (query[i] === ')') {
+                parenCount--;
+            } else if (parenCount === 0) {
+                // 括弧がバランスした状態で FROM キーワードを検索
+                const remaining = query.substring(i);
+                const fromMatch = remaining.match(/\bFROM\b/i);
+                if (fromMatch && fromMatch.index === 0 || (fromMatch.index > 0 && /^\s+FROM\b/i.test(remaining))) {
+                    fromIndex = i;
+                    break;
+                }
+            }
+        }
+        console.log('デバッグ: parseSelectQuery - query="' + query + '"');
+        
+        // SELECT 句を抽出
+        if (fromIndex > selectStart) {
+            const selectStr = query.substring(selectStart, fromIndex).trim();
+            // カンマで分割して各カラムを処理
+            const cols = selectStr.split(',');
+            cols.forEach(col => {
+                col = col.trim();
+                if (col === '*') return;
+                
+                // AS 別名を抽出
+                const asMatch = col.match(/AS\s+(\w+)/i);
+                const columnAlias = asMatch ? asMatch[1].toLowerCase() : null;
+                
+                // テーブル.カラム形式を抽出（括弧内のサブクエリは除外）
+                const tableColMatch = col.match(/(\w+)\.(\w+)/);
+                
+                if (tableColMatch && !col.startsWith('(')) {
+                    // テーブル.カラム形式
+                    const tableOrAlias = tableColMatch[1].toLowerCase();
+                    const columnName = tableColMatch[2].toLowerCase();
+                    const displayName = columnAlias || columnName;
+                    
+                    selectColumns.push({
+                        tableOrAlias: tableOrAlias,
+                        column: columnName,
+                        displayName: displayName,
+                        isSubquery: false
+                    });
+                } else if (col.startsWith('(') && columnAlias) {
+                    // サブクエリ（括弧で始まり、AS別名がある）
+                    selectColumns.push({
+                        tableOrAlias: null,
+                        column: columnAlias,
+                        displayName: columnAlias,
+                        isSubquery: true
+                    });
+                } else if (columnAlias) {
+                    // AS別名がある場合（サブクエリなど）、別名をカラムとして登録
+                    selectColumns.push({
+                        tableOrAlias: null,
+                        column: columnAlias,
+                        displayName: columnAlias,
+                        isSubquery: false
+                    });
+                } else if (!col.startsWith('(')) {
+                    // テーブル指定なし、AS別名なし
+                    selectColumns.push({
+                        tableOrAlias: null,
+                        column: col.toLowerCase(),
+                        displayName: col.toLowerCase(),
+                        isSubquery: false
+                    });
+                }
+                //括弧で始まり AS別名がない場合はスキップ
+            });
+        }
+    }
+    
+    // ② FROM句を抽出（括弧がバランスした状態での最初のFROMを取得）
+    // サブクエリ内のFROMではなく、メインクエリのFROMを抽出
+    let fromTable = null;
+    let fromAlias = null;
+    let parenCount = 0;
+    
+    for (let i = 0; i < query.length; i++) {
+        if (query[i] === '(') {
+            parenCount++;
+        } else if (query[i] === ')') {
+            parenCount--;
+        } else if (parenCount === 0) {
+            // 括弧がバランスした状態でFROMキーワードをチェック
+            const remaining = query.substring(i);
+            const fromMatch = remaining.match(/\bFROM\s+(\S+)(?:\s+(\S+))?/i);
+            if (fromMatch && fromMatch.index === 0) {
+                fromTable = fromMatch[1].replace(/[()` ";]/g, '').toLowerCase();  // セミコロンも削除
+                fromAlias = fromMatch[2] ? fromMatch[2].replace(/[()` ";]/g, '').toLowerCase() : null;  // セミコロンも削除
+                console.log(`デバッグ: parseSelectQuery FROM - fromTable=${fromTable}, fromAlias=${fromAlias}`);
+                break;
+            }
+        }
+    }
+    
+    if (!fromTable) {
+        throw new Error('FROM句が見つかりません');
+    }
+    
+    // FROMテーブルとエイリアスのマッピング
+    if (fromAlias) {
+        aliasMap[fromAlias] = fromTable;
+    }
+    aliasMap[fromTable] = fromTable; // テーブル名そのものもマッピング
+
+    // JOIN句を抽出（クエリをJOINで分割して処理）
+    // 複数のJOINがある場合、各joinを個別に抽出して処理
+    const joinSplits = query.split(/\b(?:INNER|LEFT|RIGHT|FULL\s+OUTER)?\s*JOIN\b/i);
+    
+    // 最初の要素はFROM句までなので、1以降がJOIN句
+    const joinParts = [];
+    for (let i = 1; i < joinSplits.length; i++) {
+        joinParts.push(joinSplits[i]);
+    }
+    
+    console.log('デバッグ: joinParts =', joinParts);
+
+    const joins = [];
+    joinParts.forEach((joinPart, partIndex) => {
+        console.log(`デバッグ: joinPart[${partIndex}] = "${joinPart}"`);
+        
+        // 各JOIN部分から「テーブル名 [エイリアス] ON 条件」を抽出
+        // ON条件は複数行に対応（AND/ORを含む）
+        const joinMatch = joinPart.match(/(\S+)(?:\s+(\S+))?\s+ON\s+([\s\S]+?)$/);
+        console.log(`デバッグ: joinPart[${partIndex}] のマッチ結果 =`, joinMatch);
+        
+        if (joinMatch) {
+            const joinTable = joinMatch[1].replace(/[()` ";]/g, '').toLowerCase();  // セミコロンも削除
+            const joinAlias = joinMatch[2] ? joinMatch[2].replace(/[()` ";]/g, '').toLowerCase() : null;  // セミコロンも削除
+            const onCondition = joinMatch[3].trim().replace(/;+$/, '');  // 末尾の;も削除
+
+            // JOINテーブルとエイリアスのマッピング
+            if (joinAlias) {
+                aliasMap[joinAlias] = joinTable;
+            }
+            aliasMap[joinTable] = joinTable;
+
+            joins.push({
+                table: joinTable,
+                onCondition: onCondition
+            });
+        }
+    });
+
+    return {
+        fromTable: fromTable,
+        joins: joins,
+        aliasMap: aliasMap,
+        selectColumns: selectColumns,  // SELECT句から抽出したカラムリスト
+        query: query  // サブクエリ解析用にクエリ全体を保存
+    };
+}
+
+/**
+ * ===============================
+ * SELECT文用: テーブル情報抽出
+ * ===============================
+ * SELECT文から抽出したテーブル情報をJSON化
+ * SELECT仮想テーブルを中心に、FROM/JOINテーブルを紐づける構造
+ * 
+ * 抽出内容:
+ * - SELECT仮想テーブル（取得対象の集約）
+ * - FROM/JOINテーブル（参照先テーブル）
+ * - カラム型はすべて'unknown'で統一
+ * 
+ * @param {Object} selectInfo - parseSelectQuery()の戻り値
+ * @returns {Array<Object>} テーブルオブジェクトの配列（SELECT + FROM/JOIN）
+ * @example
+ * Output: [
+ *   {name: 'SELECT', columns: [{name: 'query_result', type: 'unknown', ...}], ...},
+ *   {name: 'users', columns: [{name: 'id', type: 'unknown', ...}], ...},
+ *   {name: 'orders', columns: [{name: 'id', type: 'unknown', ...}], ...}
+ * ]
+ */
+function extractTablesFromSelect(selectInfo) {
+    const tables = [];
+    const tableNames = new Set();
+    const tableColumnMap = new Map();  // {tableName: Set(columnNames)}
+    const aliasMap = selectInfo.aliasMap || {};
+
+    console.log('デバッグ: extractTablesFromSelect の selectInfo =', selectInfo);
+    console.log('デバッグ: aliasMap =', aliasMap);
+
+    // ① SELECTテーブルを仮想テーブルとして最初に追加
+    // SELECT句から抽出したカラムを使用（{tableOrAlias, column, displayName}の配列）
+    const selectColumnsRaw = (selectInfo.selectColumns && selectInfo.selectColumns.length > 0)
+        ? selectInfo.selectColumns
+        : [{tableOrAlias: null, column: 'query_result', displayName: 'query_result'}];
+
+    // SELECTテーブルのカラムを作成（aliasMapで型を正しく解決）
+    const selectTableColumns = selectColumnsRaw.map((col) => {
+        // サブクエリかテーブルエイリアスからリアルテーブル名を解決
+        let realTableName = 'unknown';
+        
+        // サブクエリの場合は "SUBQUERY" に設定
+        if (col.isSubquery) {
+            realTableName = 'SUBQUERY';
+        } else if (col.tableOrAlias) {
+            // aliasMap に登録されているなら、そこから取得
+            if (aliasMap[col.tableOrAlias]) {
+                realTableName = aliasMap[col.tableOrAlias];
+            } else {
+                // aliasMap にないなら、そのまま使用
+                realTableName = col.tableOrAlias;
+            }
+        }
+        
+        // テーブル名は大文字に（unknown は除外）
+        let typeToDisplay = realTableName;
+        if (realTableName !== 'unknown') {
+            typeToDisplay = realTableName.toUpperCase();
+        }
+        
+        console.log(`デバッグ: SELECTカラム ${col.displayName}: tableOrAlias=${col.tableOrAlias}, isSubquery=${col.isSubquery}, realTableName=${realTableName}, typeToDisplay=${typeToDisplay}`);
+        
+        return {
+            name: col.displayName,
+            type: typeToDisplay,  // テーブル名を大文字で設定
+            isPrimaryKey: false,
+            isForeignKey: false,
+            foreignKey: null,
+            isNullable: false,
+            isAutoIncrement: false
+        };
+    });
+
+    tables.push({
+        name: 'select',
+        columns: selectTableColumns,
+        primaryKeys: [],
+        primaryKey: null,
+        foreignKeyConstraints: []
+    });
+
+    // ② FROM句のテーブルを追加（PK表示なし）
+    if (selectInfo.fromTable) {
+        const tableName = selectInfo.fromTable.toLowerCase();
+        tableNames.add(tableName);
+        if (!tableColumnMap.has(tableName)) {
+            tableColumnMap.set(tableName, new Set());
+        }
+    }
+
+    // ③ JOIN句のテーブルを追加（PK表示なし）
+    selectInfo.joins.forEach(join => {
+        const tableName = join.table.toLowerCase();
+        tableNames.add(tableName);
+        if (!tableColumnMap.has(tableName)) {
+            tableColumnMap.set(tableName, new Set());
+        }
+    });
+
+    // ③-1 サブクエリ内のFROM句のテーブルも追加
+    if (selectInfo.query) {
+        // 括弧内のSELECT...FROMパターンを探す
+        const subqueryFromPattern = /\(\s*SELECT[\s\S]*?\s+FROM\s+(\S+)(?:\s+(\S+))?\b/gi;
+        let subqueryMatch;
+        while ((subqueryMatch = subqueryFromPattern.exec(selectInfo.query)) !== null) {
+            const subqueryTable = subqueryMatch[1].replace(/[()` "]/g, '').toLowerCase();
+            
+            // メインクエリのテーブルと重複していないかチェック
+            if (subqueryTable !== selectInfo.fromTable && !selectInfo.joins.some(j => j.table === subqueryTable)) {
+                if (!tableNames.has(subqueryTable)) {
+                    tableNames.add(subqueryTable);
+                    if (!tableColumnMap.has(subqueryTable)) {
+                        tableColumnMap.set(subqueryTable, new Set(['id']));
+                    }
+                }
+            }
+        }
+    }
+
+    // ④ SELECT句から出てくるカラムを、各実テーブルに追加（サブクエリは除外）
+    selectColumnsRaw.forEach((col) => {
+        // サブクエリカラムは実テーブルに追加しない
+        if (col.isSubquery) return;
+        
+        if (col.tableOrAlias && aliasMap[col.tableOrAlias]) {
+            const realTableName = aliasMap[col.tableOrAlias];
+            if (tableColumnMap.has(realTableName)) {
+                tableColumnMap.get(realTableName).add(col.displayName);
+            }
+        } else if (col.tableOrAlias && tableColumnMap.has(col.tableOrAlias)) {
+            tableColumnMap.get(col.tableOrAlias).add(col.displayName);
+        }
+    });
+
+    // ④-1 ON条件から参照されているカラムも追加
+    if (selectInfo.joins) {
+        selectInfo.joins.forEach(join => {
+            // ON条件から「テーブル.カラム」パターンを抽出
+            const onMatches = join.onCondition.match(/([\w]+)\.([\w]+)/g);
+            if (onMatches) {
+                onMatches.forEach(match => {
+                    const parts = match.match(/([\w]+)\.([\w]+)/);
+                    if (parts) {
+                        const tableOrAlias = parts[1].toLowerCase();
+                        const column = parts[2].toLowerCase();
+                        
+                        // エイリアスをリアルテーブル名に変換
+                        const realTableName = aliasMap[tableOrAlias] || tableOrAlias;
+                        
+                        // 実テーブルのカラムセットに追加
+                        if (tableColumnMap.has(realTableName)) {
+                            tableColumnMap.get(realTableName).add(column);
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    // idカラムも常に追加
+    tableColumnMap.forEach((cols) => {
+        cols.add('id');
+    });
+
+    // ⑤ 実テーブルをMapから作成
+    tableColumnMap.forEach((columnSet, tableName) => {
+        const columns = Array.from(columnSet).map(colName => ({
+            name: colName,
+            type: 'unknown',
+            isPrimaryKey: false,
+            isForeignKey: false,
+            foreignKey: null,
+            isNullable: false,
+            isAutoIncrement: false
+        }));
+        
+        tables.push({
+            name: tableName,
+            columns: columns,
+            primaryKeys: [],
+            primaryKey: null,
+            foreignKeyConstraints: []
+        });
+    });
+
+    return tables;
+}
+
+/**
+ * ===============================
+ * SELECT文用: JOIN ON条件から関係推測
+ * ===============================
+ * SELECT仮想テーブルをハブとして、FROM/JOINテーブルへの関係を作成
+ * 
+ * 関係構造:
+ * - SELECT → FROM テーブル（直接接続）
+ * - SELECT → JOIN テーブル1, テーブル2, ... （直接接続）
+ * 
+ * @param {Array<Object>} joins - parseSelectQuery()で抽出したJOIN配列
+ * @param {Set<string>} tableNames - SELECT文に含まれるテーブル名のセット
+ * @param {Object} selectInfo - parseSelectQuery()の戻り値（FROM/JOINテーブル情報）
+ * @param {Object} aliasMap - エイリアス→テーブル名マッピング
+ * @returns {Array<Object>} 推測されたリレーションシップの配列
+ * @example
+ * Output: [
+ *   {fromTable: 'select', fromColumn: 'query_result', toTable: 'users', toColumn: 'id', type: 'from'},
+ *   {fromTable: 'select', fromColumn: 'query_result', toTable: 'orders', toColumn: 'id', type: 'join'}
+ * ]
+ */
+function inferRelationshipsFromJoin(joins, tableNames, aliasMap = {}, selectInfo = {}) {
+    const relationships = [];
+
+    // ① SELECTテーブルからFROMテーブルへの関係（1:1）
+    if (selectInfo.fromTable) {
+        relationships.push({
+            fromTable: 'select',
+            fromColumn: selectInfo.fromTable,
+            toTable: selectInfo.fromTable,
+            toColumn: selectInfo.fromTable,  // コメントはtoTableのみ
+            type: 'select_from'  // SELECT←FROM の1:1関係
+        });
+    }
+
+    // ② SELECTテーブルから各JOINテーブルへの関係（1:1）
+    joins.forEach(join => {
+        relationships.push({
+            fromTable: 'select',
+            fromColumn: join.table,
+            toTable: join.table,
+            toColumn: join.table,  // コメントはtoTableのみ
+            type: 'select_join'  // SELECT←JOIN の1:1関係
+        });
+    });
+
+    // ③ ON条件からJOIN元テーブル間の関係を抽出（複数条件対応）
+    // 例：ON u.id = o.user_id AND o.id = oi.order_id → users||orders, orders||order_items
+    console.log('デバッグ: aliasMap =', aliasMap);
+    
+    joins.forEach((join, joinIndex) => {
+        const onCondition = join.onCondition;
+        console.log(`デバッグ: JOIN ${joinIndex} の ON条件 = "${onCondition}"`);
+        
+        // ON条件から全ての「テーブル1.カラム = テーブル2.カラム」パターンを抽出（/g付き）
+        const conditionMatches = onCondition.match(/([\w]+)\.([\w]+)\s*=\s*([\w]+)\.([\w]+)/g);
+        console.log(`デバッグ: JOIN ${joinIndex} のマッチ結果 =`, conditionMatches);
+        
+        if (conditionMatches) {
+            conditionMatches.forEach((match, matchIndex) => {
+                const parts = match.match(/([\w]+)\.([\w]+)\s*=\s*([\w]+)\.([\w]+)/);
+                if (parts) {
+                    const table1Alias = parts[1].toLowerCase();
+                    const col1 = parts[2].toLowerCase();
+                    const table2Alias = parts[3].toLowerCase();
+                    const col2 = parts[4].toLowerCase();
+
+                    // エイリアスをリアルテーブル名に変換
+                    const table1 = aliasMap[table1Alias] || table1Alias;
+                    const table2 = aliasMap[table2Alias] || table2Alias;
+
+                    console.log(`デバッグ: 条件 ${matchIndex} = "${match}", マッピング: ${table1Alias}→${table1}, ${table2Alias}→${table2}`);
+
+                    // テーブル間の関係を追加（両方が異なるテーブルである場合）
+                    if (table1 !== table2 && table1 !== 'select' && table2 !== 'select') {
+                        console.log(`デバッグ: 関係を追加: ${table1} ||--o{ ${table2}`);
+                        relationships.push({
+                            fromTable: table1,
+                            fromColumn: col1,
+                            toTable: table2,
+                            toColumn: col2,
+                            type: 'join_condition'  // JOIN条件からの関係
+                        });
+                    } else {
+                        console.log(`デバッグ: 関係を追加しない (${table1} === ${table2} OR ${table1} === 'select' OR ${table2} === 'select')`);
+                    }
+                }
+            });
+        }
+    });
+
+    // ④ WHERE条件からもテーブル間の関係を抽出（サブクエリ内など）
+    // 例：WHERE o.user_id = u.id → orders ||--o{ users
+    if (selectInfo.query) {
+        const whereMatch = selectInfo.query.match(/WHERE\s+([\s\S]+?)(?=GROUP|ORDER|LIMIT|;|$)/i);
+        if (whereMatch) {
+            const whereCondition = whereMatch[1];
+            console.log(`デバッグ: WHERE条件 = "${whereCondition}"`);
+            
+            // WHERE条件から「テーブル.カラム = テーブル.カラム」パターンを抽出
+            const whereMatches = whereCondition.match(/([\w]+)\.([\w]+)\s*=\s*([\w]+)\.([\w]+)/g);
+            console.log(`デバッグ: WHERE マッチ結果 =`, whereMatches);
+            
+            if (whereMatches) {
+                whereMatches.forEach((match) => {
+                    const parts = match.match(/([\w]+)\.([\w]+)\s*=\s*([\w]+)\.([\w]+)/);
+                    if (parts) {
+                        const table1Alias = parts[1].toLowerCase();
+                        const col1 = parts[2].toLowerCase();
+                        const table2Alias = parts[3].toLowerCase();
+                        const col2 = parts[4].toLowerCase();
+
+                        // エイリアスをリアルテーブル名に変換
+                        // aliasMapになければ、テーブル名そのものを使用
+                        // tableNamesに含まれていなければスキップ
+                        let table1 = aliasMap[table1Alias] || table1Alias;
+                        let table2 = aliasMap[table2Alias] || table2Alias;
+
+                        console.log(`デバッグ: WHERE条件 "${match}", マッピング: ${table1Alias}→${table1}, ${table2Alias}→${table2}, tableNames={${Array.from(tableNames).join(', ')}}`);
+
+                        // テーブル名がtableNamesに含まれているかチェック（サブクエリなど含む）
+                        const table1Valid = tableNames.has(table1);
+                        const table2Valid = tableNames.has(table2);
+
+                        // テーブル間の関係を追加（両方が有効なテーブルで、かつ異なる場合）
+                        if (table1 !== table2 && table1 !== 'select' && table2 !== 'select' && 
+                            table1Valid && table2Valid) {
+                            const relationshipExists = relationships.some(r => 
+                                (r.fromTable === table1 && r.toTable === table2) ||
+                                (r.fromTable === table2 && r.toTable === table1)
+                            );
+                            if (!relationshipExists) {
+                                console.log(`デバッグ: WHERE関係を追加: ${table1} ||--o{ ${table2}`);
+                                relationships.push({
+                                    fromTable: table1,
+                                    fromColumn: col1,
+                                    toTable: table2,
+                                    toColumn: col2,
+                                    type: 'where_condition'  // WHERE条件からの関係
+                                });
+                            }
+                        } else {
+                            console.log(`デバッグ: WHERE関係を追加しない (${table1Valid ? 'table1Valid' : 'table1Invalid'}, ${table2Valid ? 'table2Valid' : 'table2Invalid'})`)
+                        }
+                    }
+                });
+            }
+        }
+    }
+
+    // ⑤ SELECT が参照するすべてのテーブル（サブクエリ含む）への関連線
+    // tableNamesに含まれるテーブルのうち、まだ関連線がないものに SELECT との関連線を追加
+    tableNames.forEach(tableName => {
+        // 既に SELECT ↔ このテーブルの関連線があるかチェック
+        const hasRelationship = relationships.some(r => 
+            (r.fromTable === 'select' && r.toTable === tableName) ||
+            (r.fromTable === tableName && r.toTable === 'select')
+        );
+        
+        // 関連線がなければ、SELECT <- サブクエリテーブル の関連線を追加
+        if (!hasRelationship && tableName !== selectInfo.fromTable && 
+            !joins.some(j => j.table === tableName)) {
+            console.log(`デバッグ: SELECT ↔ サブクエリテーブル関連線を追加: select ||--|| ${tableName}`);
+            relationships.push({
+                fromTable: 'select',
+                fromColumn: tableName,
+                toTable: tableName,
+                toColumn: tableName,
+                type: 'select_from'  // SELECT ← サブクエリテーブル
+            });
+        }
+    });
+
+    return relationships;
+}
+
+/**
+ * ===============================
  * ⑤ ER図生成（Mermaid形式）
  * ===============================
  * テーブルと関係情報からMermaidのER図定義を生成
@@ -483,8 +1094,9 @@ function generateMermaidDiagram(tables, relationships) {
         table.columns.forEach(column => {
             // データ型の正規化
             // VARCHAR(255) → varchar, DECIMAL(10,2) → decimal
+            // typeMapにない型（テーブル名など）は元の型をそのまま使用
             const baseType = column.type.toLowerCase().split('(')[0].trim();
-            const typeStr = typeMap[baseType] || 'string';
+            const typeStr = typeMap[baseType] || column.type;  // テーブル名は大文字を保持
             
             // 制約フラグをMermaid形式で表現
             // PK = Primary Key, FK = Foreign Key
@@ -511,9 +1123,21 @@ function generateMermaidDiagram(tables, relationships) {
             const fromTableUpper = rel.fromTable.toUpperCase();
             const toTableUpper = rel.toTable.toUpperCase();
             
-            // Mermaid形式: TABLE1 ||--o{ TABLE2 : "LABEL"
-            // ||--o{ は「1対多」を示す線
-            mermaidCode += `    ${fromTableUpper} ||--o{ ${toTableUpper} : "${fromTableUpper}.${rel.fromColumn}"\n`;
+            // 関係タイプに応じて異なる線を描画
+            if (rel.type === 'select_from' || rel.type === 'select_join') {
+                // SELECT ↔ 実テーブル： 1:1の関係（||--||）
+                // コメントはtoTableのみ
+                mermaidCode += `    ${fromTableUpper} ||--|| ${toTableUpper} : ""\n`;
+            } else if (rel.type === 'join_condition') {
+                // JOIN条件からの実テーブル間の関係：1対多（||--o{）
+                mermaidCode += `    ${fromTableUpper} ||--o{ ${toTableUpper} : "${fromTableUpper}.${rel.fromColumn} = ${toTableUpper}.${rel.toColumn}"\n`;
+            } else if (rel.type === 'where_condition') {
+                // WHERE条件からの実テーブル間の関係：1対多（||--o{）
+                mermaidCode += `    ${fromTableUpper} ||--o{ ${toTableUpper} : "${fromTableUpper}.${rel.fromColumn} = ${toTableUpper}.${rel.toColumn} (WHERE)"\n`;
+            } else if (rel.type === 'foreign_key' || rel.type === 'inferred') {
+                // CREATE文モードでの通常の外部キー関係
+                mermaidCode += `    ${fromTableUpper} ||--o{ ${toTableUpper} : "${fromTableUpper}.${rel.fromColumn}"\n`;
+            }
         }
     });
 
@@ -525,15 +1149,16 @@ function generateMermaidDiagram(tables, relationships) {
 
 /**
  * ===============================
- * ⑥ ER図表示
+ * ⑥ ER図表示（CREATE/SELECT共通）
  * ===============================
- * 生成したMermaidコードをHTMLの#erDiagramに挿入
+ * 生成したMermaidコードをHTMLに挿入
  * Mermaid.jsライブラリがあれば自動的にレンダリング
  * 
  * @param {string} mermaidDiagram - Mermaid形式のER図定義コード
+ * @param {string} elementId - 出力先要素のID (デフォルト: 'createErDiagram')
  */
-function displayDiagram(mermaidDiagram) {
-    const outputArea = document.querySelector('#createErDiagram');
+function displayDiagram(mermaidDiagram, elementId = 'createErDiagram') {
+    const outputArea = document.querySelector(`#${elementId}`);
     if (outputArea) {
         // Mermaidのコードを <pre class="mermaid">...</pre> 形式でHTML要素に挿入
         outputArea.innerHTML = `<pre class="mermaid">${mermaidDiagram}</pre>`;
@@ -547,7 +1172,7 @@ function displayDiagram(mermaidDiagram) {
 
 /**
  * ===============================
- * ⑦-1 Mermaidエクスポート準備
+ * ⑦-1 Mermaidエクスポート準備（CREATE/SELECT共通）
  * ===============================
  * Mermaidコード、テーブル情報をグローバルに保存
  * ダウンロードボタンのクリックハンドラを設定
@@ -557,22 +1182,26 @@ function displayDiagram(mermaidDiagram) {
  * - tables: テーブル定義と全カラン情報
  * - relationships: テーブル間の関係
  * - generatedAt: ER図生成日時
+ * - diagramElementId: ER図のHTML要素ID
  * 
  * @param {Array<Object>} tables - テーブル情報
  * @param {Array<Object>} relationships - リレーションシップ情報
  * @param {string} mermaidCode - 生成されたMermaidコード
+ * @param {string} downloadBtnSelector - ダウンロードボタンのセレクタ (デフォルト: '.create-downloadButton')
+ * @param {string} diagramElementId - ER図要素のID (デフォルト: 'createErDiagram')
  */
-function prepareExcelExport(tables, relationships, mermaidCode) {
+function prepareExcelExport(tables, relationships, mermaidCode, downloadBtnSelector = '.create-downloadButton', diagramElementId = 'createErDiagram') {
     // グローバルオブジェクトにデータを保存
     window.exportData = {
         mermaidCode: mermaidCode,
         tables: tables,
         relationships: relationships,
-        generatedAt: new Date().toLocaleString('ja-JP')
+        generatedAt: new Date().toLocaleString('ja-JP'),
+        diagramElementId: diagramElementId
     };
 
     // ダウンロードボタンを有効化
-    const downloadBtn = document.querySelector('.create-downloadButton');
+    const downloadBtn = document.querySelector(downloadBtnSelector);
     if (downloadBtn) {
         downloadBtn.disabled = false;
         downloadBtn.addEventListener('click', downloadAsMermaidAndPNG);
@@ -600,6 +1229,7 @@ async function downloadAsMermaidAndPNG() {
 
     try {
         const timestamp = new Date().getTime();
+        const diagramElementId = window.exportData.diagramElementId || 'createErDiagram';
         
         // ① Mermaidコードを .mmd ファイルでダウンロード
         const mermaidCode = window.exportData.mermaidCode;
@@ -616,7 +1246,7 @@ async function downloadAsMermaidAndPNG() {
         // ② SVGをPNGに変換してダウンロード
         // 少し遅延を入れてから実行（mmdダウンロードが完了するのを待つ）
         setTimeout(() => {
-            const erDiagramDiv = document.querySelector('#createErDiagram');
+            const erDiagramDiv = document.querySelector(`#${diagramElementId}`);
             if (erDiagramDiv) {
                 // html2canvasライブラリで要素をキャプチャ
                 if (typeof html2canvas !== 'undefined') {
