@@ -26,11 +26,11 @@
 </head>
 <body class="container">
 
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1234567890123456" crossorigin="anonymous"></script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3492436194316171" crossorigin="anonymous"></script>
         <!-- Homepage Leaderboard -->
         <ins class="adsbygoogle"
         style="display:inline-block;width:728px;height:90px"
-        data-ad-client="ca-pub-1234567890123456"
+        data-ad-client="ca-pub-3492436194316171"
         data-ad-slot="1234567890"></ins>
         <script>
         (adsbygoogle = window.adsbygoogle || []).push({});
@@ -45,37 +45,58 @@
 
     <!-- タブヘッダー -->
     <div class="tab-heads mt-4 d-flex">    
-        <button class="tab-head active center-align" data-tab="1"><span>メイン</span></button>
-        <button class="tab-head center-align" data-tab="2"><span>使い方</span></button>
-        <button class="tab-head center-align" data-tab="3"><span>サイト紹介</span></button>
-        <button class="tab-head center-align" data-tab="4"><span>プライバシーポリシー</span></button>
+        <button class="tab-head active center-align" data-tab="1"><span>CREATE</span></button>
+        <button class="tab-head center-align" data-tab="2"><span>SELECT</span></button>
+        <button class="tab-head center-align" data-tab="3"><span>使い方</span></button>
+        <button class="tab-head center-align" data-tab="4"><span>サイト紹介</span></button>
+        <button class="tab-head center-align" data-tab="5"><span>プライバシーポリシー</span></button>
     </div>
 
     <!-- タブボディー -->
     <div class="tab-bodies">
         <div data-tab="1" class="tab-body active">
-            <!-- メインタブ -->
+            <!-- CREATEタブ -->
             <p class="form-text mt-2">クエリを入力してください</p>
             <div class="input-group inputQuery">
                 <span class="input-group-text">クエリ</span>
-                <textarea class="query form-control" style="height: 300px;" id="query" placeholder="例：CREATE TABLE users (id INT, name VARCHAR(50));"></textarea>
+                <textarea class="create-query form-control" style="height: 300px;" id="query" placeholder="例：CREATE TABLE users (id INT, name VARCHAR(50));"></textarea>
                 <div class="CharCounter" id="charCounter">0 / 2000</div>
             </div>
-            <button type="button" class="generateStartButton mt-3 btn btn-primary">生成</button>
+            <button type="button" class="Create2ER-StartButton mt-3 btn btn-primary">生成</button>
 
             <!-- 生成結果 -->
-            <div class="generate-result">
+            <div class="create-generate-result">
                 <h4 class="mt-5">＜ 生成結果 ＞</h4>
 
                 <p class="mt-3"><b>■プレビュー</b></p>
-                <div id="erDiagram" style="border: 1px solid #ccc; padding: 15px; border-radius: 4px; background-color: #f9f9f9; min-height: 300px;"></div>
+                <div id="createErDiagram" style="border: 1px solid #ccc; padding: 15px; border-radius: 4px; background-color: #f9f9f9; min-height: 300px;"></div>
 
-                <button type="button" class="downloadButton mt-3 btn btn-primary" disabled>ダウンロード</button>
+                <button type="button" class="create-downloadButton mt-3 btn btn-primary" disabled>ダウンロード</button>
             </div>
-
         </div>
 
         <div data-tab="2" class="tab-body">
+            <!-- SELECTタブ -->
+            <p class="form-text mt-2">クエリを入力してください</p>
+            <div class="input-group inputQuery">
+                <span class="input-group-text">クエリ</span>
+                <textarea class="select-query form-control" style="height: 300px;" id="query" placeholder="例：SELECT * FROM users;"></textarea>
+                <div class="CharCounter" id="charCounter">0 / 2000</div>
+            </div>
+            <button type="button" class="Select2ER-StartButton mt-3 btn btn-primary">生成</button>
+
+            <!-- 生成結果 -->
+            <div class="select-generate-result">
+                <h4 class="mt-5">＜ 生成結果 ＞</h4>
+
+                <p class="mt-3"><b>■プレビュー</b></p>
+                <div id="selectErDiagram" style="border: 1px solid #ccc; padding: 15px; border-radius: 4px; background-color: #f9f9f9; min-height: 300px;"></div>
+
+                <button type="button" class="select-downloadButton mt-3 btn btn-primary" disabled>ダウンロード</button>
+            </div>
+        </div>
+
+        <div data-tab="3" class="tab-body">
             <!-- 使い方タブ -->
             <h3 class="mt-3">使い方</h3>
             <p class="form-text">１．DDL（CREATE TABLE文）をテキストエリアに張り付け</p>
@@ -84,7 +105,7 @@
             <p class="form-text">４．「ダウンロード」ボタンをクリックして、ER図をmmd形式とPNG形式で保存</p>
         </div>
 
-        <div data-tab="3" class="tab-body">
+        <div data-tab="4" class="tab-body">
             <!-- サイト紹介タブ -->
             <h3 class="mt-3">サイト紹介</h3>
             <p class="form-text">SQL2ERは、DDL（CREATE TABLE文）からER図を自動生成できるツールです。</p>
@@ -99,7 +120,7 @@
             <p class="form-text mt-3">English version coming soon...</p>
         </div>
 
-        <div data-tab="4" class="tab-body">
+        <div data-tab="5" class="tab-body">
             <!-- プライバシーポリシータブ -->
             <h3 class="mt-3">プライバシーポリシー</h3>
             <p class="form-text">当サイトでは広告配信のためCookieを使用することがあります。</p>
@@ -107,11 +128,11 @@
     </div>
     <script defer src="script.js"></script>
     
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1234567890123456" crossorigin="anonymous"></script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3492436194316171" crossorigin="anonymous"></script>
         <!-- Homepage Leaderboard -->
         <ins class="adsbygoogle"
         style="display:inline-block;width:728px;height:90px"
-        data-ad-client="ca-pub-1234567890123456"
+        data-ad-client="ca-pub-3492436194316171"
         data-ad-slot="1234567890"></ins>
         <script>
         (adsbygoogle = window.adsbygoogle || []).push({});

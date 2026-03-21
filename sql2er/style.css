@@ -45,12 +45,12 @@
     flex-direction:column;
 }
 
-/* ======= 例外名表示用 ======= */
-.generate-result {
+/* ======= 生成結果表示用 ======= */
+.create-generate-result, .select-generate-result {
     display:none;
 }
 
-.generate-result.active {
+.create-generate-result.active, .select-generate-result.active {
     display:flex;
     flex-direction:column;
 }
