@@ -9,18 +9,18 @@
  * 4. 関係推測 → 5. ER図生成 → 6. UI表示 & エクスポート準備
  */
 
-const button = document.querySelector('.generateStartButton');
+const button = document.querySelector('.Create2ER-StartButton');
 button.addEventListener('click', () => {
     console.log('=== 生成開始 ===');
     try {
         // ① クエリ入力値を取得
-        const query = document.querySelector('textarea').value.trim();
+        const query = document.querySelector('.create-query').value.trim();
         if (!query) {
             alert('クエリを入力してください');
             return;
         }
 
-        document.querySelector('.generate-result').classList.add('active');
+        document.querySelector('.create-generate-result').classList.add('active');
 
         // ② クエリの妥当性を検証
         validateQuery(query);
@@ -35,7 +35,7 @@ button.addEventListener('click', () => {
         const mermaidCode = generateMermaidDiagram(tables, relationships);
         
         // ⑥ UIに表示 & Mermaidエクスポート準備
-        displayDiagram(mermaidCode);
+        displayDiagram(mermaidCode, 'createErDiagram');
         prepareExcelExport(tables, relationships, mermaidCode);
 
     } catch (error) {
@@ -533,7 +533,7 @@ function generateMermaidDiagram(tables, relationships) {
  * @param {string} mermaidDiagram - Mermaid形式のER図定義コード
  */
 function displayDiagram(mermaidDiagram) {
-    const outputArea = document.querySelector('#erDiagram');
+    const outputArea = document.querySelector('#createErDiagram');
     if (outputArea) {
         // Mermaidのコードを <pre class="mermaid">...</pre> 形式でHTML要素に挿入
         outputArea.innerHTML = `<pre class="mermaid">${mermaidDiagram}</pre>`;
@@ -572,7 +572,7 @@ function prepareExcelExport(tables, relationships, mermaidCode) {
     };
 
     // ダウンロードボタンを有効化
-    const downloadBtn = document.querySelector('.downloadButton');
+    const downloadBtn = document.querySelector('.create-downloadButton');
     if (downloadBtn) {
         downloadBtn.disabled = false;
         downloadBtn.addEventListener('click', downloadAsMermaidAndPNG);
@@ -616,7 +616,7 @@ async function downloadAsMermaidAndPNG() {
         // ② SVGをPNGに変換してダウンロード
         // 少し遅延を入れてから実行（mmdダウンロードが完了するのを待つ）
         setTimeout(() => {
-            const erDiagramDiv = document.querySelector('#erDiagram');
+            const erDiagramDiv = document.querySelector('#createErDiagram');
             if (erDiagramDiv) {
                 // html2canvasライブラリで要素をキャプチャ
                 if (typeof html2canvas !== 'undefined') {
