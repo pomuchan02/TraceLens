@@ -38,13 +38,12 @@
         <img src="title.png" alt="SQLLens Title" height="8%" width="30%">
     </div>
     <h3 class="mt-3">SQL Formatter - SQL整形ツール</h3>
+    <p class="form-text">SQLを簡単に整形できる無料ツールです。　サイト詳細については<a href="../about/index.html">こちら</a></p>
     
     <!-- タブヘッダー -->
     <div class="tab-heads mt-4 d-flex">    
         <button class="tab-head active center-align" data-tab="1"><span>メイン</span></button>
         <button class="tab-head center-align" data-tab="2"><span>使い方</span></button>
-        <button class="tab-head center-align" data-tab="3"><span>サイト紹介</span></button>
-        <button class="tab-head center-align" data-tab="4"><span>プライバシーポリシー</span></button>
     </div>
 
     <!-- タブボディー -->
@@ -63,11 +62,10 @@
             <div class="formatter-result">
                 <h4 class="mt-5">＜ 整形結果 ＞</h4>
                 <div class="result-container">
-                <div class="result-header">
-                    <button id="copyBtn">Copy</button>
-                </div>
-
-                <pre><code id="formattedSql"></code></pre>
+                    <div class="result-header">
+                        <button id="copyBtn">Copy</button>
+                    </div>
+                    <pre><code id="formattedSql"></code></pre>
                 </div>
             </div>
         </div>
@@ -79,28 +77,6 @@
             <p class="form-text">２．「整形」ボタンをクリック</p>
             <p class="form-text">３．整形結果を確認</p>
             <p class="form-text">４．「コピー」ボタンで整形結果をコピー</p>
-        </div>
-
-        <div data-tab="3" class="tab-body">
-            <!-- サイト紹介タブ -->
-            <h3 class="mt-3">サイト紹介</h3>
-            <p class="form-text">SQLLensは、SQLを簡単に整形できるツールです。</p>
-            <p class="form-text">SQLを入力するだけで、整形結果を確認できます。</p>
-            <p class="form-text">製造フェーズやSQL初心者が、SQLの可読性を向上させ、問題解決に役立てることを目的としています。</p>
-            <h3 class="form-text mt-3">特徴</h3>
-            <p class="form-text">　・SQLのキーワードを大文字に変換</p>
-            <p class="form-text">　・SQLの構造に応じて適切なインデントを付与</p>
-            <p class="form-text">　・フロントエンドのみで動作</p>
-            <p class="form-text">　・入力されたSQLはサーバーに送信されないため、セキュリティ面も安心</p>
-            <p class="form-text">※個人開発として公開しています。</p>
-            <p class="form-text mt-3">完全無料</p>
-            <p class="form-text mt-3">English version coming soon.</p>
-        </div>
-
-        <div data-tab="4" class="tab-body">
-            <!-- プライバシーポリシータブ -->
-            <h3 class="mt-3">プライバシーポリシー</h3>
-            <p class="form-text">当サイトでは広告配信のためCookieを使用することがあります。</p>
         </div>
     </div>
     <script src="script.js"></script>
@@ -119,8 +95,10 @@
 </body>
 
 <footer class="footer text-center mt-5">
-    <p class="form-text mt-3 mb-3">何か問題がありましたら、お気軽にご連絡ください。</p>
-    <a href="https://twitter.com/pomu466439"><img src="x.jpg" alt="X Icon" height="20px" width="20px"></a>
+    <p class="tx mt-3 mb-3">プライバシーポリシーについては<a href="../privacy/index.html">こちら</a></p>
+    <p class="tx mt-3 mb-3">何か問題がありましたら、お気軽にご連絡ください。</p>
+    <p class="tx mt-3 mb-3">メールアドレス: <a href="mailto:trancelens.contact@gmail.com">trancelens.contact@gmail.com</a></p>
+    <p class="tx mt-3 mb-3">X（旧Twitter）: <a href="https://twitter.com/pomu466439"><img src="../x.jpg" alt="X Icon" height="20px" width="20px"></a></p>
     <p class="form-text mt-3 mb-3">&copy; 2026 TraceLens</p>
 </footer>
 

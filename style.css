@@ -9,6 +9,40 @@
     max-width: 1200px;
 }
 
+/* ======= タブヘッダー用 ======= */
+.tab-heads {
+    display: flex;
+    width: 100%;
+    max-width: 800px;
+    
+}
+
+.tab-head{
+    display: flex;
+    border-radius: 0.7em 0.7em 0 0;
+    border-color: rgb(28,1,83);
+    background-color: 	rgb(46, 101, 255);
+    cursor: pointer;
+    transition: .5s;
+    width: 30%;
+    max-width: 800px;
+    color: rgb(242,242,242);
+}
+
+.tab-head.active{
+    border-radius: 0.7em 0.7em 0 0;
+    background-color: rgb(3,70,253);
+    cursor: pointer;
+    transition: .5s;
+}
+
+/* ======= タブ本体用 ======= */
+.tab-body{
+    border-radius: 0 0 0.75em 0.75em;
+    border-top: 0.15em solid rgb(28,1,83);
+    transition: .2s;
+}
+
 .Tool-Group {
     display: flex;
     justify-content: center;
@@ -35,4 +69,30 @@
 
 .tx {
     color: #ffffff;
+}
+
+.stackTraceExample {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  background: #1e1e1e;
+  border-radius: 8px;
+  padding: 12px;
+  color: #d4d4d4;
+  font-family: "Consolas", monospace;
+  position: relative;
+}
+
+/** ======= フッター用 ======= */
+.footer {
+    border-radius: 0 0 0.75em 0.75em;
+    border-top: 0.15em solid rgb(5, 37, 128);
+    transition: .5s;
+}
+
+/* 縦横中央揃え */
+.center-align {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }

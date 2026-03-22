@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="../logo.png">
+    <link rel="icon" href="../favicon.ico">
+    <title>TranceLens | About</title>
+    <link rel="stylesheet" href="../style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <script>
+        window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+    </script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3492436194316171"
+     crossorigin="anonymous"></script>
+    <meta name="google-adsense-account" content="ca-pub-3492436194316171">
+</head>
+<body class="contents container">
+
+    <!-- Google AdSense(head) -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3492436194316171"
+        crossorigin="anonymous"></script>
+    <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-format="fluid"
+        data-ad-layout-key="-fb+5w+4e-db+86"
+        data-ad-client="ca-pub-3492436194316171"
+        data-ad-slot="6617506780"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+    
+    <!-- タイトル -->
+    <img src="../favicon.ico" alt="TranceLens Icon" class="TranceLensIcon">
+
+    <!-- 記事タブ -->
+    <h2 class="tx mt-4 mb-4" style="background-color: rgb(5, 37, 128)">【原因特定を最短化】 Javaのスタックトレースの読み方 - 完全ガイド</h2>
+
+    <h3 class="tx" style="color: rgb(112,255,255)">はじめに</h3>
+    <p class="tx">Javaで開発をしていると、エラー発生時に表示される「スタックトレース」を目にする機会は非常に多いと思います。<br>
+        しかし、情報量が多く「どこを見ればいいのか分からない」と感じる方も少なくありません。</p>
+
+    <p class="tx">本記事では、スタックトレースの基本構造から、実務での効率的な読み解き方までを分かりやすく解説します。</p>
+
+    <p class="tx" style="color: #ff1cac">------------------------------------------------------------------------------------------------------------------------------------------------------------------------------</p>
+
+    <h3 class="tx" style="color: rgb(112,255,255)">スタックトレースとは</h3>
+
+    <p class="tx">スタックトレースとは、プログラムでエラー（例外）が発生した際に、どの処理の流れで問題が起きたのかを示すログです。</p>
+
+    <p class="tx">簡単に言うと
+    <strong>「エラーに至るまでの呼び出し履歴」</strong> です。</p>
+
+    <p class="tx" style="color: #ff1cac">------------------------------------------------------------------------------------------------------------------------------------------------------------------------------</p>
+
+    <h3 class="tx" style="color: rgb(112,255,255)">基本構造を理解する</h3>
+    <p class="tx">以下は代表的なスタックトレースの例です。</p>
+
+    <pre class="stackTraceExample">Exception in thread "main" java.lang.NullPointerException
+    at com.example.service.UserService.getUser(UserService.java:25)
+    at com.example.controller.UserController.handle(UserController.java:10)
+    at com.example.Main.main(Main.java:5)</pre>
+
+    <h5 class="tx mt-5">① 例外の種類</h5>
+    <pre class="stackTraceExample">java.lang.NullPointerException</pre>
+
+    <p class="tx mt-2">どんなエラーかを示します。<br>
+        この場合は「null参照」が原因です。</p>
+    
+    <h5 class="tx mt-5">② Caused by（ある場合）</h5>
+    <pre class="stackTraceExample">Caused by: java.lang.IllegalArgumentException: Invalid argument</pre>
+    <p class="tx">👉 例外の原因がさらに別の例外である場合に表示される</p>
+    
+    <p class="tx">この場合、NullPointerExceptionの原因が「不正な引数」であったと分かります。</p>
+
+    <h5 class="tx mt-5">③ エラー発生箇所（最重要）</h5>
+    <pre class="stackTraceExample">at com.example.service.UserService.getUser(UserService.java:25)</pre>
+    <p class="tx">👉 <strong>ここが一番重要です</strong></p>
+    <ul class="tx">
+        <li>クラス名：UserService</li>
+        <li>メソッド：getUser</li>
+        <li>行数：25行目</li>
+    </ul>
+    <p class="tx">まずはこの行を確認するのが基本です。</p>
+
+    <h5 class="tx mt-5">④ 呼び出し元（下に続く）</h5>
+
+    <pre class="stackTraceExample">at com.example.controller.UserController.handle(UserController.java:10)</pre>
+
+    <p class="tx">👉 上の処理を呼び出した場所</p>
+    <p class="tx">スタックトレースは<strong>下に行くほど「過去の処理」</strong>になります。</p>
+
+    <p class="tx" style="color: #ff1cac">------------------------------------------------------------------------------------------------------------------------------------------------------------------------------</p>
+
+    <h3 class="tx" style="color: rgb(112,255,255)">効率的な読み方（実務で使う手順）</h3>
+    <h5 class="tx mt-3">手順①：一番上の「at」を見る</h5>
+    <p class="tx">👉 ここがエラーの発生源</p>
+    <h5 class="tx mt-5">手順②：例外の種類を確認</h5>
+    <ul class="tx">
+        <li>NullPointerException → nullチェック不足</li>
+        <li>IndexOutOfBoundsException → 配列・リストの範囲外</li>
+        <li>SQLException → DB関連</li>
+    </ul>
+    <p class="tx">👉 原因の方向性を絞る</p>
+    <h5 class="tx mt-5">手順③：自分のコードか確認</h5>
+
+    <pre class="stackTraceExample">com.example</pre>
+
+    <p class="tx">👉 自分のパッケージなら優先的に確認<br>
+    👉 フレームワーク（springなど）は後回し</p>
+
+    <h5 class="tx mt-5">手順④：下に向かって流れを追う</h5>
+    <p class="tx">👉 at... を辿り、「どこから呼ばれたか」を確認</p>
+
+    <p class="tx" style="color: #ff1cac">------------------------------------------------------------------------------------------------------------------------------------------------------------------------------</p>
+
+    <h3 class="tx" style="color: rgb(112,255,255)">よくあるエラーと対処</h3>
+    <h5 class="tx mt-3" style="color: #ff1cac">NullPointerException</h5>
+    <p class="tx">原因：</p>
+    <ul class="tx">
+        <li>nullのままメソッド呼び出し</li>
+    </ul>
+    <p class="tx">対処：</p>
+    <ul class="tx">
+        <li>nullチェックを入れる</li>
+        <li>初期化漏れを確認</li>
+    </ul>
+
+    <h5 class="tx mt-2" style="color: #ff1cac">IndexOutOfBoundsException</h5>
+    <p class="tx">原因：</p>
+    <ul class="tx">
+        <li>配列やリストの範囲外アクセス</li>
+    </ul>
+    <p class="tx">対処：</p>
+    <ul class="tx">
+        <li>サイズチェック</li>
+        <li>ループ条件見直し</li>
+    </ul>
+
+    <h5 class="tx mt-2" style="color: #ff1cac">SQLException</h5>
+    <p class="tx">原因：</p>
+    <ul class="tx">
+        <li>SQLミス</li>
+        <li>接続不良</li>
+    </ul>
+    <p class="tx">対処：</p>
+    <ul class="tx">
+        <li>クエリ確認</li>
+        <li>接続設定確認</li>
+    </ul>
+
+    <p class="tx" style="color: #ff1cac">------------------------------------------------------------------------------------------------------------------------------------------------------------------------------</p>
+
+    <h3 class="tx" style="color: rgb(112,255,255)">スタックトレース解析を効率化する方法</h3>
+    <p class="tx">スタックトレースが長くなると、目視での解析は非常に時間がかかります。</p>
+    <p class="tx">そのような場合は、専用ツールを使うことで可読性を大きく向上させることができます。</p>
+    <p class="tx">👉 スタックトレースを整形・解析できるツールは<a href="../tools/traceLens/index.html">こちら</a></p>
+
+    <p class="tx" style="color: #ff1cac">------------------------------------------------------------------------------------------------------------------------------------------------------------------------------</p>
+
+    <h3 class="tx" style="color: rgb(112,255,255)">まとめ</h3>
+    <p class="tx">スタックトレースは最初は難しく見えますが、ポイントを押さえれば効率的に原因特定ができます。</p>
+    <ul class="tx">
+        <li>Caused byの有無を確認する</li>
+        <li>一番上の「at」を見る</li>
+        <li>例外の種類を確認する</li>
+        <li>自分のコードを優先して確認する</li>
+        <li>下に向かって流れを追う</li>
+    </ul>
+
+    <p class="tx">これらを意識するだけで、デバッグ効率は大きく改善されます。</p>
+
+    <p class="tx" style="color: #ff1cac">------------------------------------------------------------------------------------------------------------------------------------------------------------------------------</p>
+
+    <h3 class="tx" style="color: rgb(112,255,255)">おわりに</h3>
+
+    <p class="tx">エラー解析は開発において避けて通れない作業ですが、正しい読み方を身につけることで大きな時間短縮につながります。</p>
+
+    <p class="tx">今後も開発効率を高めるツールやノウハウを発信していきます。</p>
+
+    <!-- Google AdSense(foot) -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3492436194316171"
+        crossorigin="anonymous"></script>
+    <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-format="autorelaxed"
+        data-ad-client="ca-pub-3492436194316171"
+        data-ad-slot="1090114836"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</body>
+
+<footer class="footer text-center mt-5">
+    <p class="tx mt-3 mb-3">プライバシーポリシーについては<a href="../privacy/index.html">こちら</a></p>
+    <p class="tx mt-3 mb-3">何か問題がありましたら、お気軽にご連絡ください。</p>
+    <p class="tx mt-3 mb-3">メールアドレス: <a href="mailto:trancelens.contact@gmail.com">trancelens.contact@gmail.com</a></p>
+    <p class="tx mt-3 mb-3">X（旧Twitter）: <a href="https://twitter.com/pomu466439"><img src="../x.jpg" alt="X Icon" height="20px" width="20px"></a></p>
+    <p class="form-text mt-3 mb-3">&copy; 2026 TraceLens</p>
+</footer>
+
+</html>
