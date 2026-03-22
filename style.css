@@ -13,8 +13,7 @@
 .tab-heads {
     display: flex;
     width: 100%;
-    max-width: 800px;
-    
+    max-width: 880px;
 }
 
 .tab-head{
@@ -25,7 +24,7 @@
     cursor: pointer;
     transition: .5s;
     width: 30%;
-    max-width: 800px;
+    max-width: 880px;
     color: rgb(242,242,242);
 }
 
