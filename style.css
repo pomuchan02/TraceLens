@@ -70,6 +70,28 @@
     color: #ffffff;
 }
 
+.anime-content {
+  padding: 10px;
+  animation-name: fadeIn;
+  animation-duration: 5s;
+  animation-timing-function: ease;
+  animation-delay: 1s;
+  animation-iteration-count: 1;
+  animation-direction: normal;
+  animation-fill-mode: backwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .stackTraceExample {
   margin: 0;
   white-space: pre-wrap;
