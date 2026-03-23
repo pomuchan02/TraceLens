@@ -1276,7 +1276,7 @@ async function downloadAsMermaidAndPNG() {
             }
         }, 500);
 
-        alert('Mermaidコード(.mmd)をダウンロード中...\n※ PNG画像も別途ダウンロードされます');
+        alert('Downloading Mermaid(.mmd)...\n※ PNG image will also be downloaded separately');
 
     } catch (error) {
         alert(`ダウンロード失敗: ${error.message}`);
