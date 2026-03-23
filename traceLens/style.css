@@ -16,7 +16,7 @@
     display: flex;
     border-radius: 0.7em 0.7em 0 0;
     border-color: rgb(137,195,235);
-    background-color: rgba(137, 196, 235, 0.436);
+    background-color: rgba(137, 196, 235, 0.692);
     cursor: pointer;
     transition: .5s;
     width: 30%;
