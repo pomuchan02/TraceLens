@@ -120,7 +120,7 @@
 /** ======= フッター用 ======= */
 .footer {
     border-radius: 0 0 0.75em 0.75em;
-    border-top: 0.15em solid rgb(5, 37, 128);
+    border-top: 0.15em solid #ff1cac;
     transition: .5s;
 }
 

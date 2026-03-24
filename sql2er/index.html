@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta property="og:title" content="SQL2ER - 無料SQLからER図自動生成ツール">
-    <meta property="og:image" content="og.png">
+    <meta property="og:title" content="SQL2ER - SQLからER図自動生成ツール">
+    <meta property="og:description" content="SQLからER図を自動生成できる無料ツールです。SELECTクエリとCREATE(DDL)クエリの両方に対応しています。">
+    <meta property="og:image" content="https://www.trancelens.com/sql2er/ogp.png">
+    <meta property="og:url" content="https://www.trancelens.com/sql2er/index.html">
     <meta property="og:type" content="website">
     <link rel="icon" type="image/png" href="logo.png">
     <link rel="icon" href="favicon.ico">
@@ -68,14 +70,20 @@
             <button type="button" class="Select2ER-StartButton mt-3 btn btn-primary">生成</button>
 
             <!-- 生成結果 -->
-            <div class="select-generate-result">
+            <div class="select-generate-result.active">
                 <h4 class="mt-5">＜ 生成結果 ＞</h4>
 
-                <p class="mt-3"><b>■プレビュー</b></p>
+                <p class="mt-3"><b>■ プレビュー</b></p>
                 <div id="selectErDiagram" style="border: 1px solid #ccc; padding: 15px; border-radius: 4px; background-color: #f9f9f9; min-height: 300px;"></div>
 
-                <button type="button" class="select-downloadButton mt-3 btn btn-primary" disabled>ダウンロード</button>
+                
                 <p class="form-text">※Mermaid形式（.mmd）とPNG形式でダウンロード可能</p>
+
+                <div class="share-section d-flex" style="margin-left: auto;">
+                    <button type="button" class="select-downloadButton btn btn-primary" disabled>ダウンロード</button>
+                    <button type="button" class="shareButton btn btn-secondary" style="margin-left: 2%;">共有</button>
+                    <img src="../x.jpg" alt="X Icon" class="twitterShareButton" style="margin-left: 2%" height="35px" width="35px">
+                </div>
             </div>
         </div>
 
@@ -98,6 +106,7 @@
 
                 <button type="button" class="create-downloadButton mt-3 btn btn-primary" disabled>ダウンロード</button>
                 <p class="form-text">※Mermaid形式（.mmd）とPNG形式でダウンロード可能</p>
+                <button type="button" class="shareButton mt-3 btn btn-secondary">共有</button>
             </div>
         </div>
 

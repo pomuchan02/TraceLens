@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="../logo.png">
+    <link rel="icon" href="../favicon.ico">
+    <title>SELECT to ER Diagramを自動生成する方法【JOIN解析】 | TranceLens</title>
+    <link rel="stylesheet" href="../style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <script>
+        window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+    </script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3492436194316171"
+     crossorigin="anonymous"></script>
+    <meta name="google-adsense-account" content="ca-pub-3492436194316171">
+</head>
+<body class="contents container">
+
+    <!-- Google AdSense(head) -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3492436194316171"
+        crossorigin="anonymous"></script>
+    <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-format="fluid"
+        data-ad-layout-key="-fb+5w+4e-db+86"
+        data-ad-client="ca-pub-3492436194316171"
+        data-ad-slot="6617506780"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+    
+    <!-- タイトル -->
+    <img src="../favicon.ico" alt="TranceLens Icon" class="TranceLensIcon">
+
+    <!-- 記事タブ -->
+    <p class="tx" style="text-align: right;"><a href="select2er.html">日本語</a></p>
+    <h2 class="tx mt-4 mb-4" style="background-color: rgb(5, 37, 128)">How to Automatically Generate ER Diagrams from SELECT Statements【JOIN Analysis】</h2>
+
+    <h3 class="h-tx">Introduction</h3>
+    <p class="tx">This article explains how to create ER diagrams from SQL SELECT statements.</p>
+    <p class="tx">Even when JOINs are complex and table structures are difficult to understand, you can visualize relationships using only SELECT statements.</p>
+
+    <div class="border"></div>
+
+    <h3 class="h-tx">What is an ER Diagram?</h3>
+    <p class="tx">An ER diagram is a visual representation of a database's structure.</p>
+    <ul class="tx">
+        <li>Entity (Table)</li>
+        <li>Attribute (Column)</li>
+        <li>Relationship (Relation)</li>
+    </ul>
+
+    <p class="tx">By representing these elements in a diagram, you can intuitively understand the structure of the data.</p>
+    <img src="ERDiagram.png" alt="Example ER Diagram" class="img-fluid" style="height: 50%; width: 80%;">
+
+    <div class="border"></div>
+
+    <h3 class="h-tx">Benefits of Generating ER Diagrams from SELECT Statements</h3>
+    <h5 class="tx mt-4">Understand the Overall Structure</h5>
+    <p class="tx">As the number of joined tables increases, it becomes difficult to understand the structure using only SQL.
+        Having an ER diagram allows you to grasp the overall structure at a glance.</p>
+
+    <h5 class="tx mt-4">Easier Maintenance and Modification</h5>
+    <p class="tx">When modifying an existing system, having an ER diagram makes it easier to identify the impact range and reduce work costs.</p>
+
+    <h5 class="tx mt-4">No Need for Table Definitions</h5>
+    <p class="tx">You can visualize the structure using only the SELECT statements in front of you, without the need to search for table definitions.</p>
+
+    <h5 class="tx mt-4">Easy for Everyone to Understand</h5>
+    <p class="tx">By visualizing the structure, even non-engineers can understand it easily, which is helpful for onboarding new team members.</p>
+
+    <div class="border"></div>
+
+    <h3 class="h-tx">Why Can ER Diagrams Be Created from SELECT Statements?</h3>
+    <p class="tx">Typically, ER diagrams are created from DDL statements like CREATE TABLE, but it is also possible to infer relationships between tables from SELECT statements.</p>
+
+    <p class="tx">The reason is that SELECT statements explicitly specify the join conditions (relationships) between tables.</p>
+    <p class="tx">For example, consider the following SQL:</p>
+    <pre class="stackTraceExample">SELECT *
+FROM users u
+JOIN orders o ON u.id = o.user_id;</pre>
+
+    <p class="tx mt-3">In this case,</p>
+    <pre class="stackTraceExample">u.id = o.user_id</pre>
+
+    <p class="tx">is the condition specified.</p>
+
+    <p class="tx">This represents</p>
+    <ul class="tx">
+        <li>users table's id column (primary key)</li>
+        <li>orders table's user_id column (foreign key)</li>
+    </ul>
+
+    <p class="tx">represents the relationship between the tables.</p>
+    <p class="tx">In other words, <strong style="color: #ff1cac">JOIN + ON clause = ER diagram line</strong>.</p>
+
+    <p class="tx">By analyzing the join conditions contained in the SELECT statement, it is possible to automatically generate an ER diagram.</p>
+
+    <div class="border"></div>
+
+    <h3 class="h-tx">How JOIN Works</h3>
+    <p class="tx">JOIN is an SQL construct used to combine multiple tables and retrieve data.<br>
+        By specifying join conditions, only data that matches the conditions is combined.</p>
+
+    <p class="tx">The basic syntax is as follows:</p>
+<pre class="stackTraceExample">SELECT *
+FROM TableA
+JOIN TableB ON condition;</pre>
+    <p class="tx">The "condition" defines the relationship between the tables.</p>
+
+    <div class="border"></div>
+
+    <h3 class="h-tx">Types of JOINs</h3>
+    <h5 class="tx mt-4">INNER JOIN</h5>
+    <pre class="stackTraceExample">SELECT *
+FROM users u
+INNER JOIN orders o ON u.id = o.user_id;</pre>
+    <ul class="tx">
+        <li>Retrieves only the data that exists in both tables.</li>
+        <li>The most common type of JOIN.</li>
+    </ul>
+    
+    <h5 class="tx mt-4">LEFT JOIN</h5>
+    <pre class="stackTraceExample">SELECT *
+FROM users u
+LEFT JOIN orders o ON u.id = o.user_id;</pre>
+    <ul class="tx">
+        <li>All rows from the left table (users) are included.</li>
+        <li>Rows from the right table (orders) that do not match will be NULL.</li>
+    </ul>
+    <h5 class="tx mt-4">RIGHT JOIN</h5>
+    <pre class="stackTraceExample">SELECT *
+FROM users u
+RIGHT JOIN orders o ON u.id = o.user_id;</pre>
+    <ul class="tx">
+        <li>All rows from the right table (orders) are included.</li>
+        <li>Rows from the left table (users) that do not match will be NULL.</li>
+    </ul>
+
+    <div class="border"></div>
+
+    <h3 class="h-tx">Relationship with ER Diagrams</h3>
+    <p class="tx">JOIN is not just for data retrieval; it <strong style="color: #ff1cac">represents how tables are connected</strong>.</p>
+
+    <p class="tx">Therefore, by analyzing JOINs,</p>
+    <p class="tx">👉 it is possible to reconstruct the relationships between tables (ER diagrams)</p>
+    <p class="tx">in other words, JOINs can be used to generate ER diagrams.</p>
+
+    <div class="border"></div>
+
+    <h3 class="h-tx">How to Read the ON Clause (Most Important)</h3>
+    <p class="tx">The most important aspect of ER diagram generation is analyzing the ON clause.<br>
+        The ON clause directly specifies the relationships between tables.</p>
+
+    <h5 class="tx">Basic Pattern</h5>
+    <pre class="stackTraceExample">u.id = o.user_id</pre>
+
+    <p class="tx mt-3">From this line, we can infer the following:</p>
+
+    <ul class="tx">
+        <li>users.id is related to orders.user_id</li>
+        <li>users is the parent table</li>
+        <li>orders is the child table</li>
+    </ul>
+
+    <h5 class="tx mt-4">Tips for Reading</h5>
+    <ul class="tx">
+        <li>① Look at both sides of the "="</li>
+        <p class="tx">👉 Each side is a column from a different table</p>
+
+        <li>② The side with "id" is often the parent</li>
+        <p class="tx">users.id ← parent<br>
+            orders.user_id ← child</p>
+
+        <li>③ Multiple JOINs follow the same pattern</li>
+        <pre class="stackTraceExample">JOIN order_items oi ON o.id = oi.order_id</pre>
+        <pre class="stackTraceExample mt-2">JOIN products p ON oi.product_id = p.id;</pre>
+        <p class="tx">👉 You can analyze them one by one</p>
+    </ul>
+    
+    <h5 class="tx">Points to note</h5>
+    <ul class="tx">
+        <li>Be careful with aliases (u, o, etc.)</li>
+        <li>There may be multiple conditions (AND)</li>
+        <li>ON o.id = s.order_id AND o.user_id = s.user_id</li>
+    </ul>
+    <p class="tx">👉 Analyze each condition separately</p>
+
+    <div class="border"></div>
+
+    <h3 class="h-tx">Common Issues</h3>
+    <h5 class="tx">Have you ever encountered this...?</h5>
+    <ul class="tx">
+        <li>Too many JOINs make the structure hard to understand</li>
+        <li>It's difficult to track table relationships in your head</li>
+        <li>You want an ER diagram, but it doesn't exist</li>
+    </ul>
+
+    <div class="border"></div>
+
+    <h3 class="h-tx">Solution</h3>
+    <h5 class="tx">Utilize Automatic Generation Tools</h5>
+    <p class="tx">These issues can be resolved by using tools that automatically generate ER diagrams from SELECT statements.</p>
+
+    <p class="tx">Our site provides a tool that can automatically generate ER diagrams from SQL.<br>
+        👉 The ER diagram generation tool is <a href="../sql2er/en/index.html">here</a></p>
+
+    <h5 class="tx mt-4">Features</h5>
+    <ul class="tx">
+        <li>Works entirely in the browser (no installation required)</li>
+        <li>Frontend-only solution</li>
+        <li>SQL input is not sent externally</li>
+    </ul>
+
+    <h5 class="tx">Use Cases</h5>
+    <ul class="tx">
+        <li>Analyzing existing systems</li>
+        <li>Visualizing and sharing structures</li>
+        <li>SQL review</li>
+        <li>Onboarding new team members</li>
+    </ul>
+
+    <div class="border"></div>
+
+    <h3 class="h-tx">Summary</h3>
+    <ul class="tx">
+        <li>SELECT statements contain relationship information</li>
+        <li>JOIN defines the relationships between tables</li>
+        <li>By analyzing the ON clause, ER diagrams can be generated</li>
+    </ul>
+
+    <p class="tx">By utilizing this mechanism, it is possible to visualize table structures even without DDL.</p>
+
+    <p class="tx">Using SQL2ER, these can be <strong>automatically visualized</strong><br>
+        👉 <a href="../sql2er/en/index.html">Try it out</a></p>
+    
+    <img src="SQL2ER(SELECT)-ENGLISH.gif" alt="SQL2ER(SELECT) English" class="img-fluid">
+
+
+    <!-- Google AdSense(foot) -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3492436194316171"
+        crossorigin="anonymous"></script>
+    <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-format="autorelaxed"
+        data-ad-client="ca-pub-3492436194316171"
+        data-ad-slot="1090114836"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</body>
+
+<footer class="footer text-center mt-5">
+    <p class="tx mt-3 mb-3">About: <a href="../about/index.html">here</a></p>
+    <p class="tx mt-3 mb-3">Privacy Policy: <a href="../privacy/index.html">here</a></p>
+
+    <p class="tx mt-3 mb-3">Contact</p>
+    <p class="tx mt-3 mb-3">Email: <a href="mailto:trancelens.contact@gmail.com">trancelens.contact@gmail.com</a></p>
+    <p class="form-text mt-3 mb-3">&copy; 2026 TranceLens</p>
+</footer>
+
+</html>

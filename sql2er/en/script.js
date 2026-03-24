@@ -21,7 +21,7 @@ button.addEventListener('click', () => {
         // ① クエリ入力値を取得
         const query = document.querySelector('.create-query').value.trim();
         if (!query) {
-            alert('クエリを入力してください');
+            alert('Please enter a query');
             return;
         }
 
@@ -63,7 +63,7 @@ selectButton.addEventListener('click', () => {
         // ① クエリ入力値を取得
         const query = document.querySelector('.select-query').value.trim();
         if (!query) {
-            alert('クエリを入力してください');
+            alert('Please enter a query');
             return;
         }
 
@@ -110,10 +110,10 @@ selectButton.addEventListener('click', () => {
  */
 function validateQuery(query) {
     if (!query || query.length === 0) {
-        throw new Error('クエリが空です');
+        throw new Error('The query is empty');
     }
     if (!/CREATE\s+TABLE|SELECT/i.test(query)) {
-        throw new Error('CREATE TABLE文またはSELECT文が見つかりません');
+        throw new Error('No CREATE TABLE or SELECT statement found');
     }
 }
 
@@ -137,7 +137,7 @@ function parseQuery(query) {
         .filter(stmt => stmt.length > 0 && /CREATE\s+TABLE/i.test(stmt));
 
     if (statements.length === 0) {
-        throw new Error('有効なCREATE TABLE文が見つかりません');
+        throw new Error('No valid CREATE TABLE statements found');
     }
     return statements;
 }
@@ -149,7 +149,7 @@ function parseQuery(query) {
  * CREATE TABLE文からテーブル情報をJSON化
  * 抽出内容:
  * - テーブル名
- * - カラン定義（名前、データ型、属性）
+ * - カラム定義（名前、データ型、属性）
  * - PRIMARY KEY（複合主キーにも対応）
  * - FOREIGN KEY制約（外部キー関連を後で利用）
  * 
@@ -177,7 +177,7 @@ function extractTables(statements) {
         const defEnd = statement.lastIndexOf(')');
         
         if (defStart === -1 || defEnd === -1) {
-            throw new Error(`${tableName}: カラム定義が見つかりません`);
+            throw new Error(`${tableName}: Column definitions not found`);
         }
 
         // カラム定義部分（括弧内）を抽出して解析
@@ -1223,7 +1223,7 @@ function prepareExcelExport(tables, relationships, mermaidCode, downloadBtnSelec
  */
 async function downloadAsMermaidAndPNG() {
     if (!window.exportData) {
-        alert('先にER図を生成してください');
+        alert('Please generate the ER diagram first');
         return;
     }
 
@@ -1266,8 +1266,8 @@ async function downloadAsMermaidAndPNG() {
                             URL.revokeObjectURL(pngUrl);
                         }, 'image/png');
                     }).catch(error => {
-                        console.warn('PNG変換に失敗:', error);
-                        alert('PNG画像の生成に失敗しました。Mermaidコード(.mmd)のみ提供します。');
+                        console.warn('Failed to convert PNG:', error);
+                        alert('Failed to generate PNG image. Only Mermaid code (.mmd) will be provided.');
                     });
                 } else {
                     // html2canvasがない場合、SVG→PNG変換を代替実装
@@ -1276,10 +1276,10 @@ async function downloadAsMermaidAndPNG() {
             }
         }, 500);
 
-        alert('Mermaid形式(.mmd)ファイルをダウンロード中...\n※PNG画像も別途ダウンロードされます');
+        alert('Downloading Mermaid(.mmd)...\n※ PNG image will also be downloaded separately');
 
     } catch (error) {
-        alert(`ダウンロード失敗: ${error.message}`);
+        alert(`Download failed: ${error.message}`);
     }
 }
 
@@ -1337,8 +1337,8 @@ function convertSvgToPng(element, filename) {
         img.src = svgUrl;
 
     } catch (error) {
-        console.error('SVG→PNG変換エラー:', error);
-        alert('PNG画像の変換に失敗しました。Mermaidコード(.mmd)ファイルをご利用ください。');
+        console.error('SVG to PNG conversion error:', error);
+        alert('Failed to convert PNG image. Please use the Mermaid code (.mmd) file.');
     }
 }
 
@@ -1403,7 +1403,7 @@ shareButtons.forEach(btn => {
         if (navigator.share) {
             navigator.share({
                 title: document.title,
-                text: '複雑なSQL結合を読むのにうんざりしていませんか？\n\nこのツールを使えば、SELECTクエリを瞬時にER図に変換できます。\n\nぜひ試してみて！\nSQL2ER',
+                text: 'Tired of reading complex SQL joins?\n\nThis tool turns your SELECT queries into ER diagrams instantly.\n\nTry it:',
                 url: location.href
             }).catch(err => console.log('Share cancelled:', err));
         } else {
@@ -1424,7 +1424,7 @@ const twitterShareButtons = document.querySelectorAll('.twitterShareButton');
 twitterShareButtons.forEach(btn => {
     btn.addEventListener('click', () => {
         const url = encodeURIComponent(location.href);
-        const text = encodeURIComponent('複雑なSQL結合を読むのにうんざりしていませんか？\n\nこのツールを使えば、SELECTクエリを瞬時にER図に変換できます。\n\nぜひ試してみて！\nSQL2ER');
+        const text = encodeURIComponent('Tired of reading complex SQL joins?\n\nThis tool turns your SELECT queries into ER diagrams instantly.\n\nTry it:');
         window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`);
     });
 });
