@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="../logo.png">
+    <link rel="icon" href="../favicon.ico">
+    <title>SELECT文からER図を自動生成する方法【JOIN解析】 | TranceLens</title>
+    <link rel="stylesheet" href="../style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <script>
+        window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+    </script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3492436194316171"
+     crossorigin="anonymous"></script>
+    <meta name="google-adsense-account" content="ca-pub-3492436194316171">
+</head>
+<body class="contents container">
+
+    <!-- Google AdSense(head) -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3492436194316171"
+        crossorigin="anonymous"></script>
+    <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-format="fluid"
+        data-ad-layout-key="-fb+5w+4e-db+86"
+        data-ad-client="ca-pub-3492436194316171"
+        data-ad-slot="6617506780"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+    
+    <!-- タイトル -->
+    <img src="../favicon.ico" alt="TranceLens Icon" class="TranceLensIcon">
+
+    <!-- 記事タブ -->
+    <h2 class="tx mt-4 mb-4" style="background-color: rgb(5, 37, 128)">SELECT文からER図を自動生成する方法【JOIN解析】</h2>
+
+    <h3 class="h-tx">はじめに</h3>
+    <p class="tx">SQLのSELECT文からER図を作成する方法を解説します。</p>
+    <p class="tx">JOINが複雑でテーブル構造が分かりづらい場合でも、SELECT文だけで関係性を可視化できます。</p>
+
+    <div class="border"></div>
+
+    <h3 class="h-tx">ER図とは</h3>
+    <p class="tx">ER図とは、データベースの構造を視覚的に表現した図です。</p>
+    <ul class="tx">
+        <li>エンティティ（テーブル）</li>
+        <li>属性（カラム）</li>
+        <li>関係性（リレーション）</li>
+    </ul>
+
+    <p class="tx">これらを図として表すことで、データの構造を直感的に理解できます。</p>
+    <img src="ERDiagram.png" alt="ER図の例" class="img-fluid" style="height: 50%; width: 80%;">
+
+    <div class="border"></div>
+
+    <h3 class="h-tx">SELECT文からER図を生成するメリット</h3>
+    <h5 class="tx mt-4">構造の全体像を把握できる</h5>
+    <p class="tx">結合テーブルが増えるほど、SQLだけでは構造理解が難しくなります。
+        ER図があることで、全体像を一目で把握できます。</p>
+
+    <h5 class="tx mt-4">保守・改修がしやすくなる</h5>
+    <p class="tx">既存システムの改修時、ER図があると影響範囲の特定が容易になり 作業コストを削減できます。</p>
+
+    <h5 class="tx mt-4">テーブル定義不要</h5>
+    <p class="tx">テーブル定義を探す手間なくても、目の前にあるSELECT文だけで構造を可視化できます。</p>
+
+    <h5 class="tx mt-4">誰でも理解しやすい</h5>
+    <p class="tx">視覚化されることで、非エンジニアでも理解しやすくなり、新人のキャッチアップにも役立ちます。</p>
+
+    <div class="border"></div>
+
+    <h3 class="h-tx">なぜSELECTからER図が作れるのか</h3>
+    <p class="tx">通常、ER図はCREATE TABLEなどのDDLから作成されることが多いですが、<br>
+        実はSELECT文からでもテーブル同士の関係を読み取ることができます。</p>
+
+    <p class="tx">その理由は、SELECT文にはテーブル間の結合条件（リレーション）が明示されているためです。</p>
+    <p class="tx">例えば以下のSQLを見てみます。</p>
+    <pre class="stackTraceExample">SELECT *
+FROM users u
+JOIN orders o ON u.id = o.user_id;</pre>
+
+    <p class="tx mt-3">このとき</p>
+    <pre class="stackTraceExample">u.id = o.user_id</pre>
+
+    <p class="tx">という条件が記述されています。</p>
+
+    <p class="tx">これは</p>
+    <ul class="tx">
+        <li>users テーブル の id カラム（主キー）</li>
+        <li>orders テーブル の user_id カラム（外部キー）</li>
+    </ul>
+
+    <p class="tx">の関係を表しており、テーブル同士のリレーションそのものです。</p>
+    <p class="tx">つまり、<strong style="color: #ff1cac">JOIN + ON句 = ER図の線</strong>と考えることができます。</p>
+
+    <p class="tx">このように、SELECT文の中に含まれる結合条件を解析することで、ER図を自動的に生成することが可能になります。</p>
+
+    <div class="border"></div>
+
+    <h3 class="h-tx">JOINの仕組み</h3>
+    <p class="tx">JOINは、複数のテーブルを結び付けてデータを取得するためのSQL構文です。<br>
+        結合条件を指定することで、条件に一致するデータのみを結合します。</p>
+
+    <p class="tx">基本的な書き方は以下の通りです。</p>
+<pre class="stackTraceExample">SELECT *
+FROM テーブルA
+JOIN テーブルB ON 条件;</pre>
+    <p class="tx">この「条件」がテーブル同士の関係を定義しています。</p>
+
+    <div class="border"></div>
+
+    <h3 class="h-tx">代表的なJOINの種類</h3>
+    <h5 class="tx mt-4">INNER JOIN - 内部結合</h5>
+    <pre class="stackTraceExample">SELECT *
+FROM users u
+INNER JOIN orders o ON u.id = o.user_id;</pre>
+    <ul class="tx">
+        <li>両方のテーブルに存在するデータのみ取得します。</li>
+        <li>最も一般的なJOINです。</li>
+    </ul>
+    
+    <h5 class="tx mt-4">LEFT JOIN - 左外部結合</h5>
+    <pre class="stackTraceExample">SELECT *
+FROM users u
+LEFT JOIN orders o ON u.id = o.user_id;</pre>
+    <ul class="tx">
+        <li>左のテーブル（users）は必ず残る</li>
+        <li>右のテーブル（orders）は存在しない場合NULL</li>
+    </ul>
+    <h5 class="tx mt-4">RIGHT JOIN - 右外部結合</h5>
+    <pre class="stackTraceExample">SELECT *
+FROM users u
+RIGHT JOIN orders o ON u.id = o.user_id;</pre>
+    <ul class="tx">
+        <li>右のテーブル（orders）は必ず残る</li>
+        <li>左のテーブル（users）は存在しない場合NULL</li>
+    </ul>
+
+    <div class="border"></div>
+
+    <h3 class="h-tx">ER図との関係</h3>
+    <p class="tx">JOINは単なるデータ取得ではなく、<strong style="color: #ff1cac">どのテーブルとどのテーブルがどう繋がっているか</strong>を表現しています。</p>
+
+    <p class="tx">そのため、JOINを解析することで</p>
+    <p class="tx">👉 テーブル間の関係（ER図）を復元できる</p>
+    <p class="tx">というわけです。</p>
+
+    <div class="border"></div>
+
+    <h3 class="h-tx">ON句の見方（最重要）</h3>
+    <p class="tx">ER図生成において最も重要なのがON句の解析です。<br>
+        ON句には、テーブル同士の結びつきが直接書かれています。</p>
+
+    <h5 class="tx">基本パターン</h5>
+    <pre class="stackTraceExample">u.id = o.user_id</pre>
+
+    <p class="tx mt-3">この1行から読み取れることは以下です。</p>
+
+    <ul class="tx">
+        <li>users.id と orders.user_id が関連している</li>
+        <li>usersが親テーブル</li>
+        <li>ordersが子テーブル</li>
+    </ul>
+
+    <h5 class="tx mt-4">読み取り方のコツ</h5>
+    <ul class="tx">
+        <li>① 「=」の左右を見る</strong></li>
+        <p class="tx">👉 それぞれ別テーブルのカラム</p>
+
+        <li>② 「id」を持つ側が親になりやすい</li>
+        <p class="tx">users.id ← 親<br>
+            orders.user_id ← 子</p>
+
+        <li>③ 複数JOINも同じ</li>
+        <pre class="stackTraceExample">JOIN order_items oi ON o.id = oi.order_id</pre>
+        <pre class="stackTraceExample mt-2">JOIN products p ON oi.product_id = p.id;</pre>
+        <p class="tx">👉 1つずつ分解すればOK</p>
+    </ul>
+    
+    <h5 class="tx">注意点</h5>
+    <ul class="tx">
+        <li>alias（u, o など）に注意する</li>
+        <li>複数条件（AND）がある場合もある</li>
+        <li>ON o.id = s.order_id AND o.user_id = s.user_id</li>
+    </ul>
+    <p class="tx">👉 それぞれ個別に解析する</p>
+
+    <div class="border"></div>
+
+    <h3 class="h-tx">よくある課題</h3>
+    <h5 class="tx">こういう時ってないですか...？</h5>
+    <ul class="tx">
+        <li>JOINが多すぎて構造が分からない</li>
+        <li>テーブルの関係を頭の中で追うのがつらい</li>
+        <li>ER図が欲しいけど存在しない</li>
+    </ul>
+
+    <div class="border"></div>
+
+    <h3 class="h-tx">解決方法</h3>
+    <h5 class="tx">自動生成ツールを活用する</h5>
+    <p class="tx">これらの課題は、SELECT文からER図を自動生成ツールを活用することで解決できます。</p>
+
+    <p class="tx">当サイトでは、SQLからER図を自動生成できるツールを提供しています。<br>
+        👉 ER図生成ツールは<a href="../sql2er/index.html">こちら</a></p>
+
+    <h5 class="tx mt-4">特徴</h5>
+    <ul class="tx">
+        <li>ブラウザだけで動作（インストール不要）</li>
+        <li>フロントエンドのみで完結</li>
+        <li>入力したSQLは外部へ送信されない</li>
+    </ul>
+
+    <h5 class="tx">活用シーン</h5>
+    <ul class="tx">
+        <li>既存システムの解析</li>
+        <li>構造の可視化・共有</li>
+        <li>SQLレビュー</li>
+        <li>新規メンバーのキャッチアップ</li>
+    </ul>
+
+    <div class="border"></div>
+
+    <h3 class="h-tx">まとめ</h3>
+    <ul class="tx">
+        <li>SELECT文にはリレーション情報が含まれている</li>
+        <li>JOINはテーブル同士の関係を定義している</li>
+        <li>ON句を解析すればER図を生成できる</li>
+    </ul>
+
+    <p class="tx">この仕組みを利用することで、DDLがなくてもテーブル構造を可視化することが可能になります。</p>
+
+    <p class="tx">SQL2ERを使うと、これらを<strong>自動で可視化</strong>できます<br>
+        👉 <a href="../sql2er/index.html">使ってみる</a></p>
+    
+    <img src="SQL2ER(SELECT)-ENGLISH.gif" alt="SQL2ER(SELECT) English" class="img-fluid">
+
+
+    <!-- Google AdSense(foot) -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3492436194316171"
+        crossorigin="anonymous"></script>
+    <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-format="autorelaxed"
+        data-ad-client="ca-pub-3492436194316171"
+        data-ad-slot="1090114836"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</body>
+
+<footer class="footer text-center mt-5">
+    <p class="tx mt-3 mb-3"><a href="../about/index.html">TranceLens</a>について</p>
+    <p class="tx">プライバシーポリシーは<a href="../privacy/index.html">こちら</a></p>
+
+    <p class="tx mt-3">お問い合わせ先<br>
+        <a href="mailto:trancelens.contact@gmail.com">trancelens.contact@gmail.com</a><br>
+        <a href="https://twitter.com/trancelens"><img src="../x.jpg" alt="X Icon" height="20px" width="20px"></a></p>
+    <p class="tx mt-3 mb-3">&copy; 2026 TranceLens</p>
+</footer>
+
+</html>

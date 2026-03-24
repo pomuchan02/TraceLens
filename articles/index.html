@@ -37,40 +37,66 @@
     <div class="tab-heads mt-4 d-flex">
         <button class="tab-head center-align" onclick="location.href='../index.html'">ホーム</button>
         <button class="tab-head center-align" onclick="location.href='../about/index.html'">サイト概要</button>
-        <button class="tab-head active center-align" onclick="location.href='../articles/index.html'">記事一覧</button>
-        <button class="tab-head center-align" onclick="location.href='../tools/index.html'">ツール一覧</button>
+        <button class="tab-head active center-align" onclick="location.href='../articles/index.html'">記事</button>
+        <button class="tab-head center-align" onclick="location.href='../tools/index.html'">ツール</button>
         <button class="tab-head center-align" onclick="location.href='../contact/index.html'">お問い合わせ</button>
         <button class="tab-head center-align" onclick="location.href='../privacy/index.html'">プライバシーポリシー</button>
     </div>
 
     <div class="tab-body">
         <!-- 記事タブ -->
-        <h2 class="tx mt-4">記事一覧</h2>
-        <p class="tx">現在、以下の記事を公開しています。</p>
+        <div class="anime-content">
+            <p class="tx mt-4">現在、以下の記事を公開しています。</p>
 
-        <div class="article">
-            <h5 class="tx mt-5" style="color: #ff1cac">❤️‍🔥【原因特定を最短化】 Javaのスタックトレースの読み方 - 完全ガイド</h5>
-            <p class="tx">　Javaで開発をしていると、エラー発生時に表示される「スタックトレース」を目にする機会は非常に多いと思います。<br>
-                　しかし、情報量が多く「どこを見ればいいのか分からない」と感じる方も少なくありません。<br>
-                　本記事では、スタックトレースの基本構造から、実務での効率的な読み解き方までを分かりやすく解説します。👉<a href="tracelens.html">続きを読む</a>
-            </p>
-        </div>
-        
-        <div class="article">
-            <h5 class="tx mt-5" style="color:#ff1cac">🆕【可読性で生産性が変わる】 SQLを読みやすく整形する理由とベストプラクティス</h5>
-            <p class="tx">　SQLはデータベース操作において欠かせない言語ですが、可読性が低いまま書かれているケースも少なくありません。<br>
-                　特に、改行やインデントがないSQLは理解に時間がかかり、バグの原因にもなります。<br>
-                　本記事では、SQLを読みやすく整形する重要性と、実務で使えるベストプラクティスを解説します。👉<a href="sqllens.html">続きを読む</a>
-            </p>
-        </div>
-        
-        <div class="article">
-            <h5 class="tx mt-5" style="color: #ff1cac">【設計理解を最速化】 ER図の重要性と自動生成ツールの活用方法</h5>
-            <p class="tx">　データベース設計において、ER図（エンティティ・リレーションシップ図）は非常に重要な役割を持ちます。<br>
-                　ER図は、テーブルの構造や関係性を視覚的に表現することで、設計の理解を深めるための強力なツールです。<br>
-                　しかし、実務ではER図が最新化されていなかったり、そもそも存在しないケースも少なくありません。<br>
-                　本記事では、ER図の基本から重要性、そして効率的に活用する方法について解説します。👉<a href="sql2er.html">続きを読む</a>
-            </p>
+            <div class="border"></div>
+            
+            <div class="article ">
+                <h5 class="h-tx mt-4">❤️‍🔥SELECT文からER図を自動生成する方法【JOIN解析】</h5>
+                <ul class="tx">
+                    SQLのSELECT文からER図を作成する方法を解説します。<br>
+                    JOINが複雑でテーブル構造が分かりづらい場合でも、SELECT文だけで関係性を可視化できます。<br>
+                    👉<a href="select2er.html">続きを読む</a>
+                </ul>
+            </div>
+
+            <div class="border"></div>
+
+            <div class="article">
+                <h5 class="h2-tx mt-4">【原因特定を最短化】 Javaのスタックトレースの読み方 - 完全ガイド</h5>
+                <ul class="tx">
+                    Javaで開発をしていると、エラー発生時に表示される「スタックトレース」を目にする機会は非常に多いと思います。<br>
+                    しかし、情報量が多く「どこを見ればいいのか分からない」と感じる方も少なくありません。<br>
+                    本記事では、スタックトレースの基本構造から、実務での効率的な読み解き方までを分かりやすく解説します。<br>
+                    👉<a href="tracelens.html">続きを読む</a>
+                </ul>
+            </div>
+
+            <div class="border"></div>
+
+            <div class="article">
+                <h5 class="h-tx mt-4">【可読性で生産性が変わる】 SQLを読みやすく整形する理由とベストプラクティス</h5>
+                <ul class="tx">
+                    SQLはデータベース操作において欠かせない言語ですが、可読性が低いまま書かれているケースも少なくありません。<br>
+                    特に、改行やインデントがないSQLは理解に時間がかかり、バグの原因にもなります。<br>
+                    本記事では、SQLを読みやすく整形する重要性と、実務で使えるベストプラクティスを解説します。<br>
+                    👉<a href="sqllens.html">続きを読む</a>
+                </ul>
+            </div>
+            
+            <div class="border"></div>
+
+            <div class="article">
+                <h5 class="h2-tx mt-4">【設計理解を最速化】 ER図の重要性と自動生成ツールの活用方法</h5>
+                <ul class="tx">
+                    データベース設計において、ER図（エンティティ・リレーションシップ図）は非常に重要な役割を持ちます。<br>
+                    ER図は、テーブルの構造や関係性を視覚的に表現することで、設計の理解を深めるための強力なツールです。<br>
+                    しかし、実務ではER図が最新化されていなかったり、そもそも存在しないケースも少なくありません。<br>
+                    本記事では、ER図の基本から重要性、そして効率的に活用する方法について解説します。<br>
+                    👉<a href="sql.html">続きを読む</a>
+                </ul>
+            </div>
+
+            <div class="border"></div>
         </div>
     </div>
 
@@ -88,10 +114,12 @@
 </body>
 
 <footer class="footer text-center mt-5">
-    <p class="tx mt-3 mb-3">プライバシーポリシーについては<a href="../privacy/index.html">こちら</a></p>
-    <p class="tx mt-3 mb-3">何か問題がありましたら、お気軽にご連絡ください。</p>
-    <p class="tx mt-3 mb-3">メールアドレス: <a href="mailto:trancelens.contact@gmail.com">trancelens.contact@gmail.com</a></p>
-    <p class="tx mt-3 mb-3">X（旧Twitter）: <a href="https://twitter.com/trancelens"><img src="../x.jpg" alt="X Icon" height="20px" width="20px"></a></p>
+    <p class="tx mt-3 mb-3"><a href="../about/index.html">TranceLens</a>について</p>
+    <p class="tx">プライバシーポリシーは<a href="../privacy/index.html">こちら</a></p>
+
+    <p class="tx mt-3">お問い合わせ先<br>
+        <a href="mailto:trancelens.contact@gmail.com">trancelens.contact@gmail.com</a><br>
+        <a href="https://twitter.com/trancelens"><img src="../x.jpg" alt="X Icon" height="20px" width="20px"></a></p>
     <p class="tx mt-3 mb-3">&copy; 2026 TranceLens</p>
 </footer>
 
