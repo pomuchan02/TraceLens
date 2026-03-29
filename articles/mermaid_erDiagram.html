@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="../logo.png">
+    <link rel="icon" href="../favicon.ico">
+    <title>SELECT文からER図を自動生成する方法【JOIN解析】 | TranceLens</title>
+    <link rel="stylesheet" href="../style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <script>
+        window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+    </script>
+    <!-- vercel analytics -->
+    <script defer src="https://cdn.vercel-insights.com/v1/script.js"></script>
+    <!-- google adsense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3492436194316171"
+     crossorigin="anonymous"></script>
+    <meta name="google-adsense-account" content="ca-pub-3492436194316171">
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-8Q9SGH6W76"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-8Q9SGH6W76');
+    </script>
+</head>
+<body class="contents container">
+
+    <!-- Google AdSense(head) -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3492436194316171"
+        crossorigin="anonymous"></script>
+    <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-format="fluid"
+        data-ad-layout-key="-fb+5w+4e-db+86"
+        data-ad-client="ca-pub-3492436194316171"
+        data-ad-slot="6617506780"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+    
+    <!-- タイトル -->
+    <img src="../favicon.ico" alt="TranceLens Icon" class="TranceLensIcon">
+
+    <!-- 記事タブ -->
+    <h2 class="tx mt-4 mb-4" style="background-color: rgb(5, 37, 128)">MermaidでER図を作成する方法【erDiagramの使い方】</h2>
+
+    <h3 class="h-tx">はじめに</h3>
+    <p class="tx">ER図を作成する方法はいくつかありますが、<br>
+        最近は<strong>Mermaidを使ってコードで管理する方法</strong>が人気です。</p>
+    <ul class="tx">
+        <li>ドキュメントにそのまま埋め込める</li>
+        <li>Gitで差分管理できる</li>
+        <li>修正が簡単</li>
+    </ul>
+    <p class="tx">この記事では、Mermaidの<code>erDiagram</code>を使ってER図を作成する方法を解説します。</p>
+
+    <div class="border"></div>
+
+    <h3 class="h-tx">Mermaidとは</h3>
+    <p class="tx">Mermaidは、テキストから図を生成できるツールです。</p>
+    <pre class="stackTraceExample">コード → 図</pre>
+    <p class="tx">のように、シンプルに構造を可視化できます。</p>
+
+    <div class="border"></div>
+
+    <h3 class="h-tx">ER図の基本構文（erDiagram）</h3>
+    <pre class="stackTraceExample">erDiagram
+  // ユーザーテーブル定義
+  USERS {
+    int id PK
+    varchar places
+  }
+  // 注文テーブル定義
+  ORDERS {
+    int order_id PK
+    varchar places FK
+  }
+  // 関係性定義
+  USERS ||--o{ ORDERS : places</pre>
+
+    <div class="border"></div>
+
+    <h3 class="h-tx">記号の意味</h3>
+    <pre class="stackTraceExample">||  → 1（必ず1つ）
+o{  → 多（0以上）</pre>
+    <p class="tx">👉 つまり</p>
+    <pre class="stackTraceExample">1対多（1:N）</pre>
+    <p class="tx">を表します。</p>
+
+    <div class="border"></div>
+
+    <h3 class="h-tx">サンプル（ECサイト）</h3>
+    <pre class="stackTraceExample">erDiagram
+    USERS {
+        int id PK
+        varchar username
+        varchar email
+        datetime created_at
+        datetime updated_at
+    }
+    ORDERS {
+        int order_id PK
+        int user_id FK
+        datetime order_date
+        decimal total_amount
+        varchar status
+    }
+    PRODUCTS {
+        int product_id PK
+        varchar product_name
+        decimal price
+        int stock_quantity
+    }
+    ORDER_ITEMS {
+        int order_item_id PK
+        int order_id FK
+        int product_id FK
+        int quantity
+        decimal unit_price
+    }
+    ORDERS ||--o{ USERS : "ORDERS.user_id"
+    ORDER_ITEMS ||--o{ ORDERS : "ORDER_ITEMS.order_id"
+    ORDER_ITEMS ||--o{ PRODUCTS : "ORDER_ITEMS.product_id"</pre>
+    <p class="tx">このコードで以下のようなER図が生成されます。</p>
+    <img src="ERDiagram02.png" alt="Mermaid ER図の例" class="img-fluid" style="height: 30%; width: 40%;">
+
+    <div class="border"></div>
+
+    <h3 class="h-tx">MermaidでER図を作るメリット</h3>
+    <h5 class="tx mt-3">① コード管理できる</h5>
+    <pre class="stackTraceExample">Gitで変更履歴を管理できる</pre>
+
+    <h5 class="tx mt-4">② ドキュメントにそのまま使える</h5>
+    <ul class="tx">
+        <li>GitHub README</li>
+        <li>Notion</li>
+        <li>技術ドキュメント</li>
+    </ul>
+
+    <h5 class="tx mt-4">③ 修正が簡単</h5>
+
+    <p class="tx">GUIツールと違って<br>
+        👉 コードを書き換えるだけ</p>
+
+    <div class="border"></div>
+
+    <h3 class="h-tx">実務での使い方</h3>
+    <ul class="tx">
+        <li>設計書の作成</li>
+        <li>チーム内共有</li>
+        <li>レビュー資料</li>
+    </ul>
+
+    <div class="border"></div>
+
+    <h3 class="h-tx">SQLから自動生成する方法</h3>
+    <p class="tx">手書きでも良いですが、<br>SQLから自動生成するとさらに効率的です。</p>
+    
+    <h5 class="tx">例えば以下のSQL</h5>
+    <pre class="stackTraceExample">-- テーブル1: users
+CREATE TABLE users (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    username VARCHAR(100) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+-- テーブル2: orders
+CREATE TABLE orders (
+    order_id INT NOT NULL,
+    tenant_id INT NOT NULL,
+    user_id INT NOT NULL,
+    order_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    total_amount DECIMAL(10, 2) NOT NULL,
+    status VARCHAR(50) DEFAULT 'pending',
+    PRIMARY KEY (order_id, tenant_id),
+    FOREIGN KEY (user_id) REFERENCES users(id),
+);</pre>
+    <p class="tx mt-2">👉 Mermaid形式に変換すると</p>
+    <pre class="stackTraceExample">erDiagram
+  USERS ||--o{ ORDERS : has</pre>
+
+    <h5 class="tx mt-4">SELECT文の場合</h5>
+    <pre class="stackTraceExample">SELECT *
+FROM users u
+JOIN orders o ON u.id = o.user_id;</pre>
+    <p class="tx mt-2">👉 Mermaid形式に変換すると</p>
+    <pre class="stackTraceExample">erDiagram
+  USERS ||--o{ ORDERS : has</pre>
+
+    <p class="tx">👉 この変換は手動でも可能ですが、<strong>ツールを使うと一瞬で生成できます。</strong><br>
+        👉 SQL2ERは<a href="../sql2er/index.html">こちら</a></p>
+    <p class="tx">※ こちらのツールは生成後にMermaid形式（.mmd）ファイルをダウンロードできます。</p>
+
+    <div class="border"></div>
+
+    <h3 class="h-tx">まとめ</h3>
+    <ul class="tx">
+        <li>MermaidでER図は簡単に作れる</li>
+        <li>コード管理できるのが強み</li>
+        <li>SQLと組み合わせるとさらに便利</li>
+    </ul>
+
+    <p class="tx">👉 SQL2ERでER図を<a href="../sql2er/index.html">自動生成してみる</a><br>
+        ※ 生成後にMermaid形式（.mmd）ファイルをダウンロードできます。</p>
+    <img src="SQL2ER(SELECT)-ENGLISH.gif" alt="SQL2ER(SELECT) English" class="img-fluid">
+
+    <!-- Google AdSense(foot) -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3492436194316171"
+        crossorigin="anonymous"></script>
+    <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-format="autorelaxed"
+        data-ad-client="ca-pub-3492436194316171"
+        data-ad-slot="1090114836"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</body>
+
+<footer class="footer text-center mt-5">
+    <p class="tx mt-3 mb-3"><a href="../about/index.html">TranceLens</a>について</p>
+    <p class="tx">プライバシーポリシーは<a href="../privacy/index.html">こちら</a></p>
+
+    <p class="tx mt-3">お問い合わせ先<br>
+        <a href="mailto:trancelens.contact@gmail.com">trancelens.contact@gmail.com</a><br>
+        <a href="https://twitter.com/trancelens"><img src="../x.jpg" alt="X Icon" height="20px" width="20px"></a></p>
+    <p class="tx mt-3 mb-3">&copy; 2026 TranceLens</p>
+</footer>
+
+</html>
